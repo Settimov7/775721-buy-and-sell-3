@@ -2,7 +2,8 @@
 
 const fs = require(`fs`);
 
-const { getRandomInt, shuffle, printNumWithLead0 } = require(`../../utils`);
+const {getRandomInt, shuffle, printNumWithLead0} = require(`../../utils`);
+const {ExitCode} = require(`../../constants`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
@@ -52,7 +53,7 @@ const SumRestrict = {
   max: 100000,
 };
 
-const getPictureFileName = (number) => `item${printNumWithLead0(number)}.jpg`;
+const getPictureFileName = (number) => `item${ printNumWithLead0(number) }.jpg`;
 
 const generateOffers = (count) => (
   Array(count).fill({}).map(() => ({
@@ -73,8 +74,10 @@ module.exports = {
     const content = JSON.stringify(generateOffers(countOffer));
 
     fs.writeFile(FILE_NAME, content, (error) => {
-      if(error) {
-        return console.error(`Can't write data to file...`);
+      if (error) {
+        console.error(`Can't write data to file...`);
+
+        return process.exit(ExitCode.error);
       }
 
       return console.info(`Operation success. File created.`);
