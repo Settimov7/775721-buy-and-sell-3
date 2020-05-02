@@ -1,8 +1,8 @@
-'use strict';
+`use strict`;
 
-const fs = require('fs');
+const fs = require(`fs`);
 
-const { getRandomInt, shuffle, printNumWithLead0 } = require('../../utils');
+const { getRandomInt, shuffle, printNumWithLead0 } = require(`../../utils`);
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
@@ -66,7 +66,7 @@ const generateOffers = (count) => (
 );
 
 module.exports = {
-  name: '--generate',
+  name: `--generate`,
   run(args) {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
