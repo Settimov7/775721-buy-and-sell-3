@@ -13,6 +13,10 @@ const TITLES = [
   `Продам отличную подборку фильмов на VHS`,
   `Куплю антиквариат`,
   `Куплю породистого кота`,
+  `Продам коллекцию журналов «Огонёк»`,
+  `Отдам в хорошие руки подшивку «Мурзилка»`,
+  `Продам советскую посуду. Почти не разбита`,
+  `Куплю детские санки`,
 ];
 
 const SENTENCES = [
@@ -25,7 +29,12 @@ const SENTENCES = [
   `Это настоящая находка для коллекционера!`,
   `Если найдёте дешевле — сброшу цену.`,
   `Таких предложений больше нет!`,
+  `Две страницы заляпаны свежим кофе.`,
   `При покупке с меня бесплатная доставка в черте города.`,
+  `Кажется, что это хрупкая вещь.`,
+  `Мой дед не мог её сломать.`,
+  `Кому нужен этот новый телефон, если тут такое...`,
+  `Не пытайтесь торговаться. Цену вещам я знаю.`,
 ];
 
 const CATEGORIES = [
@@ -57,15 +66,26 @@ const SumRestrict = {
   MAX: 100000,
 };
 
+const DescriptionRestrict = {
+  MIN: 1,
+  MAX: 5,
+};
+
+const CategoryRestrict = {
+  MIN: 1,
+};
+
 const getPictureFileName = (number) => `item${ printNumWithLead0(number) }.jpg`;
+
+const getRandomOfferType = (types) => types[getRandomInt(0, types.length - 1)];
 
 const generateOffers = (count) => (
   Array(count).fill({}).map(() => ({
-    category: [CATEGORIES[getRandomInt(0, CATEGORIES.length - 1)]],
-    description: shuffle(SENTENCES).slice(1, 5).join(` `),
+    category: shuffle(CATEGORIES).slice(0, getRandomInt(CategoryRestrict.MIN, CATEGORIES.length)),
+    description: shuffle(SENTENCES).slice(0, getRandomInt(DescriptionRestrict.MIN, DescriptionRestrict.MAX)).join(` `),
     picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
     title: TITLES[getRandomInt(0, TITLES.length - 1)],
-    type: Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
+    type: getRandomOfferType(Object.values(OfferType)),
     sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
   }))
 );
@@ -77,7 +97,7 @@ module.exports = {
     const count = Number.parseInt(rawCount, 10) || OffersCount.DEFAULT;
 
     if (count > OffersCount.MAX) {
-      console.error(`No more than ${OffersCount.MAX} offers.`);
+      console.error(`No more than ${ OffersCount.MAX } offers.`);
 
       return process.exit(ExitCode.ERROR);
     }
