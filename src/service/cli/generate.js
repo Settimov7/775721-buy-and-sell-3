@@ -5,7 +5,6 @@ const fs = require(`fs`);
 const {getRandomInt, shuffle, printNumWithLead0} = require(`../../utils`);
 const {ExitCode} = require(`../../constants`);
 
-const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
 
 const TITLES = [
@@ -38,6 +37,11 @@ const CATEGORIES = [
   `Журналы`,
 ];
 
+const OffersCount = {
+  DEFAULT: 1,
+  MAX: 1000,
+};
+
 const PictureRestrict = {
   MIN: 1,
   MAX: 16,
@@ -69,9 +73,16 @@ const generateOffers = (count) => (
 module.exports = {
   name: `--generate`,
   run(args) {
-    const [count] = args;
-    const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const content = JSON.stringify(generateOffers(countOffer));
+    const [rawCount] = args;
+    const count = Number.parseInt(rawCount, 10) || OffersCount.DEFAULT;
+
+    if (count > OffersCount.MAX) {
+      console.error(`No more than ${OffersCount.MAX} offers.`);
+
+      return process.exit(ExitCode.ERROR);
+    }
+
+    const content = JSON.stringify(generateOffers(count));
 
     fs.writeFile(FILE_NAME, content, (error) => {
       if (error) {
