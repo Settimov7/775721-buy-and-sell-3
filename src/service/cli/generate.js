@@ -2,6 +2,8 @@
 
 const fs = require(`fs`);
 
+const chalk = require(`chalk`);
+
 const {getRandomInt, shuffle, printNumWithLead0} = require(`../../utils`);
 const {ExitCode} = require(`../../constants`);
 
@@ -106,12 +108,12 @@ module.exports = {
 
     fs.writeFile(FILE_NAME, content, (error) => {
       if (error) {
-        console.error(`Can't write data to file...`);
+        console.error(chalk.red(`Can't write data to file...`));
 
         return process.exit(ExitCode.ERROR);
       }
 
-      return console.info(`Operation success. File created.`);
+      return console.info(chalk.green(`Operation success. File created.`));
     });
   },
 };
