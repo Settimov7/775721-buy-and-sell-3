@@ -101,7 +101,7 @@ module.exports = {
     if (count > OffersCount.MAX) {
       console.error(chalk.red(`No more than ${ OffersCount.MAX } offers.`));
 
-      return process.exit(ExitCode.ERROR);
+      process.exit(ExitCode.ERROR);
     }
 
     const content = JSON.stringify(generateOffers(count));
@@ -111,7 +111,7 @@ module.exports = {
     } catch (error) {
       console.error(chalk.red(`Can't write data to file...`));
 
-      return process.exit(ExitCode.ERROR);
+      process.exit(ExitCode.ERROR);
     }
 
     console.info(chalk.green(`Operation success. File created.`));
