@@ -99,7 +99,7 @@ module.exports = {
     const count = Number.parseInt(rawCount, 10) || OffersCount.DEFAULT;
 
     if (count > OffersCount.MAX) {
-      console.error(`No more than ${ OffersCount.MAX } offers.`);
+      console.error(chalk.red(`No more than ${ OffersCount.MAX } offers.`));
 
       return process.exit(ExitCode.ERROR);
     }
