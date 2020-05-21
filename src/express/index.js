@@ -11,8 +11,12 @@ const offersRouter = require(`./routes/offers-routes`);
 
 const DEFAULT_PORT = 8080;
 const PUBLIC_DIR = `public`;
+const TEMPLATES_DIR = `templates`;
 
 const app = express();
+
+app.set(`view engine`, `pug`);
+app.set(`views`, path.resolve(__dirname, TEMPLATES_DIR));
 
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 
