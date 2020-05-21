@@ -1,5 +1,7 @@
 `use strict`;
 
+const path = require(`path`);
+
 const express = require(`express`);
 const chalk = require(`chalk`);
 
@@ -8,8 +10,11 @@ const myRouter = require(`./routes/my-routes`);
 const offersRouter = require(`./routes/offers-routes`);
 
 const DEFAULT_PORT = 8080;
+const PUBLIC_DIR = `public`;
 
 const app = express();
+
+app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 
 app.use(`/`, mainRouter);
 app.use(`/my`, myRouter);
