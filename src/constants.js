@@ -12,4 +12,5 @@ module.exports.ExitCode = {
 module.exports.HttpStatusCode = {
   OK: 200,
   NOT_FOUND: 404,
+  ERROR: 500,
 };
