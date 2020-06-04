@@ -4,6 +4,8 @@ module.exports.DEFAULT_COMMAND = `--help`;
 
 module.exports.USER_ARGV_START_INDEX = 2;
 
+module.exports.MAX_ID_LENGTH = 6;
+
 module.exports.ExitCode = {
   ERROR: 1,
   SUCCESS: 0,

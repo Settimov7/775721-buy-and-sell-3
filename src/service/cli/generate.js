@@ -3,9 +3,10 @@
 const fs = require(`fs`).promises;
 
 const chalk = require(`chalk`);
+const { nanoid } = require(`nanoid`);
 
 const {getRandomInt, shuffle, printNumWithLead0} = require(`../../utils`);
-const {ExitCode} = require(`../../constants`);
+const {ExitCode, MAX_ID_LENGTH} = require(`../../constants`);
 
 const FILE_NAME = `mocks.json`;
 const FILE_SENTENCES_PATH = `./data/sentences.txt`;
@@ -47,6 +48,7 @@ const getRandomOfferType = (types) => types[getRandomInt(0, types.length - 1)];
 
 const generateOffers = (count, {titles, categories, sentences}) => (
   Array(count).fill({}).map(() => ({
+    id: nanoid(MAX_ID_LENGTH),
     category: shuffle(categories).slice(0, getRandomInt(CategoryRestrict.MIN, categories.length)),
     description: shuffle(sentences).slice(0, getRandomInt(DescriptionRestrict.MIN, DescriptionRestrict.MAX)).join(` `),
     picture: getPictureFileName(getRandomInt(PictureRestrict.MIN, PictureRestrict.MAX)),
