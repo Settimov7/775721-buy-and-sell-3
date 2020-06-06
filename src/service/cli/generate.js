@@ -105,6 +105,12 @@ module.exports = {
       process.exit(ExitCode.ERROR);
     }
 
+    if (count < 0) {
+      console.error(chalk.red(`Cant create ${ count } offers.`));
+
+      process.exit(ExitCode.ERROR);
+    }
+
     const titles = await readContent(FILE_TITLES_PATH);
     const categories = await readContent(FILE_CATEGORIES_PATH);
     const sentences = await readContent(FILE_SENTENCES_PATH);
