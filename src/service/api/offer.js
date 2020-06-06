@@ -10,15 +10,11 @@ const Route = {
   INDEX: `/`,
   OFFER: `/:offerId`,
   COMMENTS: `/:offerId/comments`,
-  COMMENT: `/:offerId/comments/:commentId`,
 };
 
-const ExpectedProperties = {
-  OFFER: [`category`, `description`, `title`, `type`, `sum`],
-  COMMENT: [`text`],
-};
+const EXPECTED_PROPERTIES = [`category`, `description`, `title`, `type`, `sum`];
 
-const createOfferRouter = (service) => {
+const createOfferRouter = (service, commentRouter) => {
   const router = new Router();
 
   router.get(Route.INDEX, (req, res) => {
@@ -27,7 +23,7 @@ const createOfferRouter = (service) => {
     res.status(HttpStatusCode.OK).json(offers);
   });
 
-  router.post(Route.INDEX, isRequestDataValid(ExpectedProperties.OFFER), (req, res) => {
+  router.post(Route.INDEX, isRequestDataValid(EXPECTED_PROPERTIES), (req, res) => {
     const {category, description, picture, title, type, sum} = req.body;
 
     const newOffer = service.create({category, description, picture, title, type, sum});
@@ -42,7 +38,7 @@ const createOfferRouter = (service) => {
     res.status(HttpStatusCode.OK).json(offer);
   });
 
-  router.put(Route.OFFER, [isOfferExists(service), isRequestDataValid(ExpectedProperties.OFFER)], (req, res) => {
+  router.put(Route.OFFER, [isOfferExists(service), isRequestDataValid(EXPECTED_PROPERTIES)], (req, res) => {
     const {offerId} = req.params;
 
     const {category, description, picture, title, type, sum} = req.body;
@@ -60,31 +56,7 @@ const createOfferRouter = (service) => {
     res.status(HttpStatusCode.OK).json(deletedOffer);
   });
 
-  router.get(Route.COMMENTS, isOfferExists(service), (req, res) => {
-    const {offerId} = req.params;
-    const comments = service.findAllComments(offerId);
-
-    res.status(HttpStatusCode.OK).json(comments);
-  });
-
-  router.post(Route.COMMENTS, [isOfferExists(service), isRequestDataValid(ExpectedProperties.COMMENT)], (req, res) => {
-    const {offerId} = req.params;
-    const {text} = req.body;
-    const newComment = service.createComment(offerId, text);
-
-    res.status(HttpStatusCode.CREATED).json(newComment);
-  });
-
-  router.delete(Route.COMMENT, isOfferExists(service), (req, res) => {
-    const {offerId, commentId} = req.params;
-    const deletedComment = service.deleteComment(offerId, commentId);
-
-    if (!deletedComment) {
-      return res.status(HttpStatusCode.NOT_FOUND).send(`Not found comment with id: ${ offerId }`);
-    }
-
-    res.status(HttpStatusCode.OK).json(deletedComment);
-  });
+  router.use(Route.COMMENTS, isOfferExists(service), commentRouter);
 
   return router;
 };

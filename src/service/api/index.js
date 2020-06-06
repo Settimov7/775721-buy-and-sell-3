@@ -7,6 +7,7 @@ const {OfferService} = require(`../data-service/offer`);
 const {createOfferRouter} = require(`./offer`);
 const {createCategoryRouter} = require(`./category`);
 const {createSearchRouter} = require(`./search`);
+const {createCommentRouter} = require(`./comment`);
 
 const Route = {
   OFFERS: `/offers`,
@@ -21,7 +22,8 @@ const router = new Router();
     const offers = await getMockData();
     const service = new OfferService(offers);
 
-    const offerRouter = createOfferRouter(service);
+    const commentRouter = createCommentRouter(service);
+    const offerRouter = createOfferRouter(service, commentRouter);
     const categoryRouter = createCategoryRouter(service);
     const searchRouter = createSearchRouter(service);
 
