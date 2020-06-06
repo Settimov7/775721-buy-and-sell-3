@@ -8,11 +8,12 @@ const Route = {
   INDEX: `/`,
 };
 
-const createCategoryRouter = (offerService) => {
+const createCategoryRouter = (offerService, categoryService) => {
   const router = new Router();
 
   router.get(Route.INDEX, (req, res) => {
-    const categories = offerService.findAllCategories();
+    const offers = offerService.findAll();
+    const categories = categoryService.findAll(offers);
 
     res.status(HttpStatusCode.OK).json(categories);
   });

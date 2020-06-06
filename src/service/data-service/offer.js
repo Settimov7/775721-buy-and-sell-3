@@ -67,12 +67,6 @@ class OfferService {
     return deletedOffer;
   }
 
-  findAllCategories() {
-    const categories = this.#offers.reduce((categories, {category}) => categories.add(...category), new Set());
-
-    return [...categories];
-  };
-
   findAllByTitle(title) {
     return this.#offers.filter((offer) => offer.title.includes(title));
   };
