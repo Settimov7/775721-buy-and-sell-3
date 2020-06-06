@@ -12,12 +12,13 @@ const Route = {
 
 const EXPECTED_PROPERTIES = [`text`];
 
-const createCommentRouter = (service) => {
+const createCommentRouter = (offerService, commentService) => {
   const router = new Router({mergeParams: true});
 
   router.get(Route.INDEX, (req, res) => {
     const {offerId} = req.params;
-    const comments = service.findAllComments(offerId);
+    const offer = offerService.findById(offerId);
+    const comments = commentService.findAll(offer);
 
     res.status(HttpStatusCode.OK).json(comments);
   });
@@ -25,14 +26,16 @@ const createCommentRouter = (service) => {
   router.post(Route.INDEX, isRequestDataValid(EXPECTED_PROPERTIES), (req, res) => {
     const {offerId} = req.params;
     const {text} = req.body;
-    const newComment = service.createComment(offerId, text);
+    const offer = offerService.findById(offerId);
+    const newComment = commentService.create(offer, text);
 
     res.status(HttpStatusCode.CREATED).json(newComment);
   });
 
   router.delete(Route.COMMENT, (req, res) => {
     const {offerId, commentId} = req.params;
-    const deletedComment = service.deleteComment(offerId, commentId);
+    const offer = offerService.findById(offerId);
+    const deletedComment = commentService.delete(offer, commentId);
 
     if (!deletedComment) {
       return res.status(HttpStatusCode.NOT_FOUND).send(`Not found comment with id: ${ commentId }`);

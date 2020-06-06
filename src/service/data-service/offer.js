@@ -67,51 +67,6 @@ class OfferService {
     return deletedOffer;
   }
 
-  findAllComments(id) {
-    const offer = this.findById(id);
-
-    if (!offer) {
-      return null;
-    }
-
-    return offer.comments;
-  };
-
-  createComment(id, text) {
-    const offer = this.findById(id);
-
-    if (!offer) {
-      return null;
-    }
-
-    const newComment = {
-      id: nanoid(MAX_ID_LENGTH),
-      text,
-    };
-
-    offer.comments.push(newComment);
-
-    return newComment;
-  }
-
-  deleteComment(id, commentId) {
-    const offer = this.findById(id);
-
-    if (!offer) {
-      return null;
-    }
-
-    const deletedComment = offer.comments.find(({id}) => id === commentId);
-
-    if (!deletedComment) {
-      return null;
-    }
-
-    offer.comments = offer.comments.filter(({id}) => id !== commentId);
-
-    return deletedComment;
-  };
-
   findAllCategories() {
     const categories = this.#offers.reduce((categories, {category}) => categories.add(...category), new Set());
 

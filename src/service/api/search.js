@@ -8,7 +8,7 @@ const Route = {
   INDEX: `/`,
 };
 
-const createSearchRouter = (service) => {
+const createSearchRouter = (offerService) => {
   const router = new Router();
 
   router.get(Route.INDEX, (req, res) => {
@@ -18,7 +18,7 @@ const createSearchRouter = (service) => {
       return res.status(HttpStatusCode.BAD_REQUEST).send(`Invalid query`);
     }
 
-    const foundedOffers = service.findAllByTitle(query);
+    const foundedOffers = offerService.findAllByTitle(query);
 
     if (!foundedOffers.length) {
       return res.status(HttpStatusCode.NOT_FOUND).send(`Not found offers which includes: ${ query }`);
