@@ -1,16 +1,20 @@
-'use strict';
+`use strict`;
 
-module.exports.DEFAULT_COMMAND = `--help`;
+exports.DEFAULT_COMMAND = `--help`;
 
-module.exports.USER_ARGV_START_INDEX = 2;
+exports.USER_ARGV_START_INDEX = 2;
 
-module.exports.ExitCode = {
+exports.MAX_ID_LENGTH = 6;
+
+exports.ExitCode = {
   ERROR: 1,
   SUCCESS: 0,
 };
 
-module.exports.HttpStatusCode = {
+exports.HttpStatusCode = {
   OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
   NOT_FOUND: 404,
   INTERNAL_SERVER_ERROR: 500,
 };
