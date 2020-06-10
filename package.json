@@ -4,7 +4,8 @@
   "description": "Учебный проект: \"Куплю.Продам\"",
   "main": "./src/service/service.js",
   "scripts": {
-    "test": "npm run eslint",
+    "test::rest": "jest src/service/api/index.e2e.test.js",
+    "test": "npm run eslint && npm run test::rest",
     "eslint": "eslint --ext .js src/",
     "start": "node ./src/service/service.js",
     "server": "nodemon ./src/service/service.js --server 3000",
