@@ -1,19 +1,17 @@
-`use strict`;
+'use strict';
 
 const {nanoid} = require(`nanoid`);
 
 const {MAX_ID_LENGTH} = require(`../../constants`);
 
 class OfferService {
-  #offers;
-
   constructor(offers) {
-    this.#offers = offers;
+    this._offers = offers;
   }
 
   findAll() {
-    return this.#offers;
-  };
+    return this._offers;
+  }
 
   create({category, description, picture, title, type, sum}) {
     const newOffer = {
@@ -27,33 +25,33 @@ class OfferService {
       comments: [],
     };
 
-    this.#offers.push(newOffer);
+    this._offers.push(newOffer);
 
     return newOffer;
-  };
+  }
 
   isExists(id) {
-    return this.#offers.some((offer) => offer.id === id);
-  };
+    return this._offers.some((offer) => offer.id === id);
+  }
 
   findById(id) {
-    return this.#offers.find((offer) => offer.id === id);
+    return this._offers.find((offer) => offer.id === id);
   }
 
   update({id, category, description, picture, title, type, sum}) {
-    const offerIndex = this.#offers.findIndex((offer) => offer.id === id);
+    const offerIndex = this._offers.findIndex((offer) => offer.id === id);
 
     if (offerIndex === -1) {
       return null;
     }
 
-    const offer = this.#offers[offerIndex];
+    const offer = this._offers[offerIndex];
     const updatedOffer = Object.assign(offer, {category, description, picture, title, type, sum});
 
-    this.#offers[offerIndex] = updatedOffer;
+    this._offers[offerIndex] = updatedOffer;
 
     return updatedOffer;
-  };
+  }
 
   delete(id) {
     const deletedOffer = this.findById(id);
@@ -62,14 +60,14 @@ class OfferService {
       return null;
     }
 
-    this.#offers = this.#offers.filter((offer) => offer.id !== id);
+    this._offers = this._offers.filter((offer) => offer.id !== id);
 
     return deletedOffer;
   }
 
   findAllByTitle(title) {
-    return this.#offers.filter((offer) => offer.title.includes(title));
-  };
+    return this._offers.filter((offer) => offer.title.includes(title));
+  }
 }
 
 exports.OfferService = OfferService;

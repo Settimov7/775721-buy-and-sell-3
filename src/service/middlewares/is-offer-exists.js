@@ -1,4 +1,4 @@
-`use strict`;
+'use strict';
 
 const {HttpStatusCode} = require(`../../constants`);
 
@@ -10,7 +10,7 @@ const isOfferExists = (service) => (req, res, next) => {
     return res.status(HttpStatusCode.NOT_FOUND).send(`Not found offer with id: ${ offerId }`);
   }
 
-  next();
+  return next();
 };
 
 exports.isOfferExists = isOfferExists;

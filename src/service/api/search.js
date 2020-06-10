@@ -1,4 +1,4 @@
-`use strict`;
+'use strict';
 
 const {Router} = require(`express`);
 
@@ -24,7 +24,7 @@ const createSearchRouter = (offerService) => {
       return res.status(HttpStatusCode.NOT_FOUND).send(`Not found offers which includes: ${ query }`);
     }
 
-    res.status(HttpStatusCode.OK).json(foundedOffers);
+    return res.status(HttpStatusCode.OK).json(foundedOffers);
   });
 
   return router;

@@ -1,12 +1,12 @@
-`use strict`;
+'use strict';
 
 const express = require(`express`);
 
 const {createRouter} = require(`../api`);
-const {getMockData} = require('../lib/get-mock-data');
-const {OfferService} = require('../data-service/offer');
-const {CommentService} = require('../data-service/comment');
-const {CategoryService} = require('../data-service/category');
+const {getMockData} = require(`../lib/get-mock-data`);
+const {OfferService} = require(`../data-service/offer`);
+const {CommentService} = require(`../data-service/comment`);
+const {CategoryService} = require(`../data-service/category`);
 const {HttpStatusCode} = require(`../../constants`);
 
 const Route = {

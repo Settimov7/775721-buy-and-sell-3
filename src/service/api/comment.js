@@ -1,4 +1,4 @@
-`use strict`;
+'use strict';
 
 const {Router} = require(`express`);
 
@@ -20,7 +20,7 @@ const createCommentRouter = (offerService, commentService) => {
     const offer = offerService.findById(offerId);
     const comments = commentService.findAll(offer);
 
-    res.status(HttpStatusCode.OK).json(comments);
+    return res.status(HttpStatusCode.OK).json(comments);
   });
 
   router.post(Route.INDEX, isRequestDataValid(EXPECTED_PROPERTIES), (req, res) => {
@@ -29,7 +29,7 @@ const createCommentRouter = (offerService, commentService) => {
     const offer = offerService.findById(offerId);
     const newComment = commentService.create(offer, text);
 
-    res.status(HttpStatusCode.CREATED).json(newComment);
+    return res.status(HttpStatusCode.CREATED).json(newComment);
   });
 
   router.delete(Route.COMMENT, (req, res) => {
@@ -41,7 +41,7 @@ const createCommentRouter = (offerService, commentService) => {
       return res.status(HttpStatusCode.NOT_FOUND).send(`Not found comment with id: ${ commentId }`);
     }
 
-    res.status(HttpStatusCode.OK).json(deletedComment);
+    return res.status(HttpStatusCode.OK).json(deletedComment);
   });
 
   return router;

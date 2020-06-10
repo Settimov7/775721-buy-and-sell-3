@@ -1,8 +1,8 @@
-`use strict`;
+'use strict';
 
 const chalk = require(`chalk`);
 
-const { createServer } = require(`../server`);
+const {createServer} = require(`../server`);
 
 const DEFAULT_PORT = 3000;
 

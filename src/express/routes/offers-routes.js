@@ -1,6 +1,6 @@
-`use strict`;
+'use strict';
 
-const { Router } = require(`express`);
+const {Router} = require(`express`);
 
 const router = new Router();
 
