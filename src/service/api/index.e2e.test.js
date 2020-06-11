@@ -7,7 +7,7 @@ const {createServer} = require(`../server`);
 
 describe(`Offers API end-points`, () => {
   it(`should return status 404 if end-point doesn't exist`, async () => {
-    const server = await createServer([]);
+    const server = await createServer({offers: []});
 
     const res = await request(server).get(`/api/random-route`);
 
@@ -68,7 +68,7 @@ describe(`Offers API end-points`, () => {
     let server;
 
     beforeEach(async () => {
-      server = await createServer(mockOffers);
+      server = await createServer({offers: mockOffers});
     });
 
     it(`should return status 200 if request was successful`, async () => {
@@ -88,7 +88,7 @@ describe(`Offers API end-points`, () => {
     let server;
 
     beforeEach(async () => {
-      server = await createServer([]);
+      server = await createServer({offers: []});
     });
 
     it(`should return status 400 if didn't send category`, async () => {
@@ -200,7 +200,7 @@ describe(`Offers API end-points`, () => {
     let server;
 
     beforeEach(async () => {
-      server = await createServer(mockOffers);
+      server = await createServer({offers: mockOffers});
     });
 
     it(`should return status 404 if offer doesn't exist`, async () => {
@@ -252,7 +252,7 @@ describe(`Offers API end-points`, () => {
     let server;
 
     beforeEach(async () => {
-      server = await createServer(mockOffers);
+      server = await createServer({offers: mockOffers});
     });
 
     it(`should return status 404 if offer doesn't exist`, async () => {
@@ -364,7 +364,7 @@ describe(`Offers API end-points`, () => {
     let server;
 
     beforeEach(async () => {
-      server = await createServer(mockOffers);
+      server = await createServer({offers: mockOffers});
     });
 
     it(`should return status 404 if offer doesn't exist`, async () => {
@@ -424,7 +424,7 @@ describe(`Offers API end-points`, () => {
     let server;
 
     beforeEach(async () => {
-      server = await createServer(mockOffers);
+      server = await createServer({offers: mockOffers});
     });
 
     it(`should return status 404 if offer doesn't exist`, async () => {
@@ -476,7 +476,7 @@ describe(`Offers API end-points`, () => {
     let server;
 
     beforeEach(async () => {
-      server = await createServer(mockOffers);
+      server = await createServer({offers: mockOffers});
     });
 
     it(`should return status 404 if offer doesn't exist`, async () => {
@@ -556,7 +556,7 @@ describe(`Offers API end-points`, () => {
     let server;
 
     beforeEach(async () => {
-      server = await createServer(mockOffers);
+      server = await createServer({offers: mockOffers});
     });
 
     it(`should return status 404 if offer doesn't exist`, async () => {
@@ -593,7 +593,7 @@ describe(`Offers API end-points`, () => {
 
   describe(`GET api/categories`, () => {
     it(`should return empty array if no offers`, async () => {
-      const server = await createServer([]);
+      const server = await createServer({offers: []});
 
       const res = await request(server).get(`/api/categories`);
 
@@ -622,7 +622,7 @@ describe(`Offers API end-points`, () => {
         comments: [],
       };
       const mockOffers = [mockOffer1, mockOffer2];
-      const server = await createServer(mockOffers);
+      const server = await createServer({offers: mockOffers});
 
       const res = await request(server).get(`/api/categories`);
 
@@ -651,7 +651,7 @@ describe(`Offers API end-points`, () => {
         comments: [],
       };
       const mockOffers = [mockOffer1, mockOffer2];
-      const server = await createServer(mockOffers);
+      const server = await createServer({offers: mockOffers});
 
       const res = await request(server).get(`/api/categories`);
 
@@ -684,7 +684,7 @@ describe(`Offers API end-points`, () => {
     let server;
 
     beforeEach(async () => {
-      server = await createServer(mockOffers);
+      server = await createServer({offers: mockOffers});
     });
 
     it(`should return status 404 if no offers with passed query`, async () => {

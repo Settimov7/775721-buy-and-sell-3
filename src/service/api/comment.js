@@ -12,24 +12,29 @@ const Route = {
 
 const EXPECTED_PROPERTIES = [`text`];
 
-const createCommentRouter = (offerService, commentService) => {
+const createCommentRouter = ({offerService, commentService, logger}) => {
   const router = new Router({mergeParams: true});
+  const isRequestDataValidMiddleware = isRequestDataValid({expectedProperties: EXPECTED_PROPERTIES, logger});
 
   router.get(Route.INDEX, (req, res) => {
     const {offerId} = req.params;
     const offer = offerService.findById(offerId);
     const comments = commentService.findAll(offer);
 
-    return res.status(HttpStatusCode.OK).json(comments);
+    res.status(HttpStatusCode.OK).json(comments);
+
+    return logger.info(`End request with status code ${ res.statusCode }`);
   });
 
-  router.post(Route.INDEX, isRequestDataValid(EXPECTED_PROPERTIES), (req, res) => {
+  router.post(Route.INDEX, isRequestDataValidMiddleware, (req, res) => {
     const {offerId} = req.params;
     const {text} = req.body;
     const offer = offerService.findById(offerId);
     const newComment = commentService.create(offer, text);
 
-    return res.status(HttpStatusCode.CREATED).json(newComment);
+    res.status(HttpStatusCode.CREATED).json(newComment);
+
+    return logger.info(`End request with status code ${ res.statusCode }`);
   });
 
   router.delete(Route.COMMENT, (req, res) => {
@@ -38,10 +43,14 @@ const createCommentRouter = (offerService, commentService) => {
     const deletedComment = commentService.delete(offer, commentId);
 
     if (!deletedComment) {
-      return res.status(HttpStatusCode.NOT_FOUND).send(`Not found comment with id: ${ commentId }`);
+      res.status(HttpStatusCode.NOT_FOUND).send(`Not found comment with id: ${ commentId }`);
+
+      return logger.error(`Cant find comment with id: ${ commentId }. End request with error: ${ res.statusCode }`);
     }
 
-    return res.status(HttpStatusCode.OK).json(deletedComment);
+    res.status(HttpStatusCode.OK).json(deletedComment);
+
+    return logger.info(`End request with status code ${ res.statusCode }`);
   });
 
   return router;

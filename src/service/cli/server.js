@@ -1,8 +1,7 @@
 'use strict';
 
-const chalk = require(`chalk`);
-
 const {createServer} = require(`../server`);
+const {pinoLogger} = require(`../logger`);
 
 const DEFAULT_PORT = 3000;
 
@@ -14,6 +13,7 @@ module.exports = {
 
     const server = await createServer();
 
-    server.listen(port, () => console.info(chalk.green(`Принимаю подключения на ${ port }`)));
+    server.listen(port, () => pinoLogger.info(`Server start on port: ${ port }`))
+    .on(`error`, (error) => pinoLogger.error(`Server can't start. Error: ${ error }`));
   },
 };

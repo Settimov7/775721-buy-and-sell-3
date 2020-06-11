@@ -14,31 +14,39 @@ const Route = {
 
 const EXPECTED_PROPERTIES = [`category`, `description`, `title`, `type`, `sum`];
 
-const createOfferRouter = (offerService, commentRouter) => {
+const createOfferRouter = ({offerService, commentRouter, logger}) => {
   const router = new Router();
+  const isRequestDataValidMiddleware = isRequestDataValid({expectedProperties: EXPECTED_PROPERTIES, logger});
+  const isOfferExistsMiddleware = isOfferExists({service: offerService, logger});
 
   router.get(Route.INDEX, (req, res) => {
     const offers = offerService.findAll();
 
     res.status(HttpStatusCode.OK).json(offers);
+
+    return logger.info(`End request with status code ${ res.statusCode }`);
   });
 
-  router.post(Route.INDEX, isRequestDataValid(EXPECTED_PROPERTIES), (req, res) => {
+  router.post(Route.INDEX, isRequestDataValidMiddleware, (req, res) => {
     const {category, description, picture, title, type, sum} = req.body;
 
     const newOffer = offerService.create({category, description, picture, title, type, sum});
 
     res.status(HttpStatusCode.CREATED).json(newOffer);
+
+    return logger.info(`End request with status code ${ res.statusCode }`);
   });
 
-  router.get(Route.OFFER, isOfferExists(offerService), (req, res) => {
+  router.get(Route.OFFER, isOfferExistsMiddleware, (req, res) => {
     const {offerId} = req.params;
     const offer = offerService.findById(offerId);
 
     res.status(HttpStatusCode.OK).json(offer);
+
+    return logger.info(`End request with status code ${ res.statusCode }`);
   });
 
-  router.put(Route.OFFER, [isOfferExists(offerService), isRequestDataValid(EXPECTED_PROPERTIES)], (req, res) => {
+  router.put(Route.OFFER, [isOfferExistsMiddleware, isRequestDataValidMiddleware], (req, res) => {
     const {offerId} = req.params;
 
     const {category, description, picture, title, type, sum} = req.body;
@@ -46,17 +54,21 @@ const createOfferRouter = (offerService, commentRouter) => {
     const updatedOffer = offerService.update({id: offerId, category, description, picture, title, type, sum});
 
     res.status(HttpStatusCode.OK).json(updatedOffer);
+
+    return logger.info(`End request with status code ${ res.statusCode }`);
   });
 
-  router.delete(Route.OFFER, isOfferExists(offerService), (req, res) => {
+  router.delete(Route.OFFER, isOfferExistsMiddleware, (req, res) => {
     const {offerId} = req.params;
 
     const deletedOffer = offerService.delete(offerId);
 
     res.status(HttpStatusCode.OK).json(deletedOffer);
+
+    return logger.info(`End request with status code ${ res.statusCode }`);
   });
 
-  router.use(Route.COMMENTS, isOfferExists(offerService), commentRouter);
+  router.use(Route.COMMENTS, isOfferExistsMiddleware, commentRouter);
 
   return router;
 };
