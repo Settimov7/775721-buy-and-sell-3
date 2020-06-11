@@ -11,9 +11,13 @@ module.exports = {
     const [customPort] = args;
     const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
 
-    const server = await createServer();
+    try {
+      const server = await createServer();
 
-    server.listen(port, () => pinoLogger.info(`Server start on port: ${ port }`))
-    .on(`error`, (error) => pinoLogger.error(`Server can't start. Error: ${ error }`));
+      server.listen(port, () => pinoLogger.info(`Server start on port: ${ port }`))
+      .on(`error`, (error) => pinoLogger.error(`Server can't start. Error: ${ error }`));
+    } catch (error) {
+      pinoLogger.error(`Can't create server. Error: ${ error }`);
+    }
   },
 };
