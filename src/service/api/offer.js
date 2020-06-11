@@ -19,34 +19,34 @@ const createOfferRouter = ({offerService, commentRouter, logger}) => {
   const isRequestDataValidMiddleware = isRequestDataValid({expectedProperties: EXPECTED_PROPERTIES, logger});
   const isOfferExistsMiddleware = isOfferExists({service: offerService, logger});
 
-  router.get(Route.INDEX, (req, res) => {
+  router.get(Route.INDEX, (req, res, next) => {
     const offers = offerService.findAll();
 
     res.status(HttpStatusCode.OK).json(offers);
 
-    return logger.info(`End request with status code ${ res.statusCode }`);
+    next();
   });
 
-  router.post(Route.INDEX, isRequestDataValidMiddleware, (req, res) => {
+  router.post(Route.INDEX, isRequestDataValidMiddleware, (req, res, next) => {
     const {category, description, picture, title, type, sum} = req.body;
 
     const newOffer = offerService.create({category, description, picture, title, type, sum});
 
     res.status(HttpStatusCode.CREATED).json(newOffer);
 
-    return logger.info(`End request with status code ${ res.statusCode }`);
+    next();
   });
 
-  router.get(Route.OFFER, isOfferExistsMiddleware, (req, res) => {
+  router.get(Route.OFFER, isOfferExistsMiddleware, (req, res, next) => {
     const {offerId} = req.params;
     const offer = offerService.findById(offerId);
 
     res.status(HttpStatusCode.OK).json(offer);
 
-    return logger.info(`End request with status code ${ res.statusCode }`);
+    next();
   });
 
-  router.put(Route.OFFER, [isOfferExistsMiddleware, isRequestDataValidMiddleware], (req, res) => {
+  router.put(Route.OFFER, [isOfferExistsMiddleware, isRequestDataValidMiddleware], (req, res, next) => {
     const {offerId} = req.params;
 
     const {category, description, picture, title, type, sum} = req.body;
@@ -55,17 +55,17 @@ const createOfferRouter = ({offerService, commentRouter, logger}) => {
 
     res.status(HttpStatusCode.OK).json(updatedOffer);
 
-    return logger.info(`End request with status code ${ res.statusCode }`);
+    next();
   });
 
-  router.delete(Route.OFFER, isOfferExistsMiddleware, (req, res) => {
+  router.delete(Route.OFFER, isOfferExistsMiddleware, (req, res, next) => {
     const {offerId} = req.params;
 
     const deletedOffer = offerService.delete(offerId);
 
     res.status(HttpStatusCode.OK).json(deletedOffer);
 
-    return logger.info(`End request with status code ${ res.statusCode }`);
+    next();
   });
 
   router.use(Route.COMMENTS, isOfferExistsMiddleware, commentRouter);

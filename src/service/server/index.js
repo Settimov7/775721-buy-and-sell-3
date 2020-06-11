@@ -42,8 +42,15 @@ const createServer = async ({offers, logger = pinoLogger} = {}) => {
 
   server.use(Route.API, router);
 
-  server.use((req, res) => {
+  server.use((req, res, next) => {
+    if (res.headersSent) {
+      return logger.info(`End request with status code ${ res.statusCode }`);
+    }
 
+    return next();
+  });
+
+  server.use((req, res) => {
     res.status(HttpStatusCode.NOT_FOUND).send(`Not found`);
 
     return logger.error(`Cant find route to url: ${ req.url }. End request with error: ${ res.statusCode }`);

@@ -8,16 +8,16 @@ const Route = {
   INDEX: `/`,
 };
 
-const createCategoryRouter = ({offerService, categoryService, logger}) => {
+const createCategoryRouter = ({offerService, categoryService}) => {
   const router = new Router();
 
-  router.get(Route.INDEX, (req, res) => {
+  router.get(Route.INDEX, (req, res, next) => {
     const offers = offerService.findAll();
     const categories = categoryService.findAll(offers);
 
     res.status(HttpStatusCode.OK).json(categories);
 
-    return logger.info(`End request with status code ${ res.statusCode }`);
+    next();
   });
 
   return router;

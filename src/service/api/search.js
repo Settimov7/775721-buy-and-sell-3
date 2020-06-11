@@ -11,7 +11,7 @@ const Route = {
 const createSearchRouter = ({offerService, logger}) => {
   const router = new Router();
 
-  router.get(Route.INDEX, (req, res) => {
+  router.get(Route.INDEX, (req, res, next) => {
     const {query} = req.query;
 
     if (!query) {
@@ -30,7 +30,7 @@ const createSearchRouter = ({offerService, logger}) => {
 
     res.status(HttpStatusCode.OK).json(foundedOffers);
 
-    return logger.info(`End request with status code ${ res.statusCode }`);
+    return next();
   });
 
   return router;
