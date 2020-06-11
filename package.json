@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "chalk": "4.0.0",
+    "cross-env": "7.0.2",
     "express": "4.17.1",
     "nanoid": "3.1.9",
     "pino": "6.3.2",
