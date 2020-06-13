@@ -1,4 +1,4 @@
-`use strict`;
+'use strict';
 
 const {Router} = require(`express`);
 
@@ -8,7 +8,7 @@ const Route = {
   INDEX: `/`,
 };
 
-const createCategoryRouter = (offerService, categoryService) => {
+const createCategoryRouter = ({offerService, categoryService}) => {
   const router = new Router();
 
   router.get(Route.INDEX, (req, res) => {

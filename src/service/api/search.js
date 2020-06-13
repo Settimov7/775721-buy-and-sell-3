@@ -1,4 +1,4 @@
-`use strict`;
+'use strict';
 
 const {Router} = require(`express`);
 
@@ -8,23 +8,27 @@ const Route = {
   INDEX: `/`,
 };
 
-const createSearchRouter = (offerService) => {
+const createSearchRouter = ({offerService, logger}) => {
   const router = new Router();
 
   router.get(Route.INDEX, (req, res) => {
     const {query} = req.query;
 
     if (!query) {
-      return res.status(HttpStatusCode.BAD_REQUEST).send(`Invalid query`);
+      res.status(HttpStatusCode.BAD_REQUEST).send(`Invalid query`);
+
+      return logger.error(`Invalid query.`);
     }
 
     const foundedOffers = offerService.findAllByTitle(query);
 
     if (!foundedOffers.length) {
-      return res.status(HttpStatusCode.NOT_FOUND).send(`Not found offers which includes: ${ query }`);
+      res.status(HttpStatusCode.NOT_FOUND).send(`Not found offers which includes: ${ query }`);
+
+      return logger.error(`Not found offers which includes: ${ query }.`);
     }
 
-    res.status(HttpStatusCode.OK).json(foundedOffers);
+    return res.status(HttpStatusCode.OK).json(foundedOffers);
   });
 
   return router;

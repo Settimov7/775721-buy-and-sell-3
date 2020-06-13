@@ -1,4 +1,4 @@
-`use strict`;
+'use strict';
 
 const {Router} = require(`express`);
 
@@ -12,8 +12,9 @@ const Route = {
 
 const EXPECTED_PROPERTIES = [`text`];
 
-const createCommentRouter = (offerService, commentService) => {
+const createCommentRouter = ({offerService, commentService, logger}) => {
   const router = new Router({mergeParams: true});
+  const isRequestDataValidMiddleware = isRequestDataValid({expectedProperties: EXPECTED_PROPERTIES, logger});
 
   router.get(Route.INDEX, (req, res) => {
     const {offerId} = req.params;
@@ -23,7 +24,7 @@ const createCommentRouter = (offerService, commentService) => {
     res.status(HttpStatusCode.OK).json(comments);
   });
 
-  router.post(Route.INDEX, isRequestDataValid(EXPECTED_PROPERTIES), (req, res) => {
+  router.post(Route.INDEX, isRequestDataValidMiddleware, (req, res) => {
     const {offerId} = req.params;
     const {text} = req.body;
     const offer = offerService.findById(offerId);
@@ -38,10 +39,12 @@ const createCommentRouter = (offerService, commentService) => {
     const deletedComment = commentService.delete(offer, commentId);
 
     if (!deletedComment) {
-      return res.status(HttpStatusCode.NOT_FOUND).send(`Not found comment with id: ${ commentId }`);
+      res.status(HttpStatusCode.NOT_FOUND).send(`Not found comment with id: ${ commentId }`);
+
+      return logger.error(`Cant find comment with id: ${ commentId }.`);
     }
 
-    res.status(HttpStatusCode.OK).json(deletedComment);
+    return res.status(HttpStatusCode.OK).json(deletedComment);
   });
 
   return router;

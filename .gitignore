@@ -14,3 +14,6 @@ mocks.json
 
 # Папка с собранными файлами проекта
 build/
+
+#Логи
+src/service/logs

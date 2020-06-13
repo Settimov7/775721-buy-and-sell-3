@@ -1,4 +1,4 @@
-`use strict`;
+'use strict';
 
 exports.DEFAULT_COMMAND = `--help`;
 
