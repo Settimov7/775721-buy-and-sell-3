@@ -16,28 +16,24 @@ const createCommentRouter = ({offerService, commentService, logger}) => {
   const router = new Router({mergeParams: true});
   const isRequestDataValidMiddleware = isRequestDataValid({expectedProperties: EXPECTED_PROPERTIES, logger});
 
-  router.get(Route.INDEX, (req, res, next) => {
+  router.get(Route.INDEX, (req, res) => {
     const {offerId} = req.params;
     const offer = offerService.findById(offerId);
     const comments = commentService.findAll(offer);
 
     res.status(HttpStatusCode.OK).json(comments);
-
-    next();
   });
 
-  router.post(Route.INDEX, isRequestDataValidMiddleware, (req, res, next) => {
+  router.post(Route.INDEX, isRequestDataValidMiddleware, (req, res) => {
     const {offerId} = req.params;
     const {text} = req.body;
     const offer = offerService.findById(offerId);
     const newComment = commentService.create(offer, text);
 
     res.status(HttpStatusCode.CREATED).json(newComment);
-
-    next();
   });
 
-  router.delete(Route.COMMENT, (req, res, next) => {
+  router.delete(Route.COMMENT, (req, res) => {
     const {offerId, commentId} = req.params;
     const offer = offerService.findById(offerId);
     const deletedComment = commentService.delete(offer, commentId);
@@ -48,9 +44,7 @@ const createCommentRouter = ({offerService, commentService, logger}) => {
       return logger.error(`Cant find comment with id: ${ commentId }. End request with error: ${ res.statusCode }`);
     }
 
-    res.status(HttpStatusCode.OK).json(deletedComment);
-
-    return next();
+    return res.status(HttpStatusCode.OK).json(deletedComment);
   });
 
   return router;

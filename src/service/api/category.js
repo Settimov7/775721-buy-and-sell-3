@@ -11,13 +11,11 @@ const Route = {
 const createCategoryRouter = ({offerService, categoryService}) => {
   const router = new Router();
 
-  router.get(Route.INDEX, (req, res, next) => {
+  router.get(Route.INDEX, (req, res) => {
     const offers = offerService.findAll();
     const categories = categoryService.findAll(offers);
 
     res.status(HttpStatusCode.OK).json(categories);
-
-    next();
   });
 
   return router;

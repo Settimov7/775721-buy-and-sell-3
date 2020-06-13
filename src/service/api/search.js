@@ -11,7 +11,7 @@ const Route = {
 const createSearchRouter = ({offerService, logger}) => {
   const router = new Router();
 
-  router.get(Route.INDEX, (req, res, next) => {
+  router.get(Route.INDEX, (req, res) => {
     const {query} = req.query;
 
     if (!query) {
@@ -28,9 +28,7 @@ const createSearchRouter = ({offerService, logger}) => {
       return logger.error(`Not found offers which includes: ${ query }. End request with error: ${ res.statusCode }`);
     }
 
-    res.status(HttpStatusCode.OK).json(foundedOffers);
-
-    return next();
+    return res.status(HttpStatusCode.OK).json(foundedOffers);
   });
 
   return router;
