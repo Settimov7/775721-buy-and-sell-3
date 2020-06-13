@@ -9,7 +9,7 @@ const isOfferExists = ({service, logger}) => (req, res, next) => {
   if (isNotExists) {
     res.status(HttpStatusCode.NOT_FOUND).send(`Not found offer with id: ${ offerId }`);
 
-    return logger.error(`Cant find offer with id: ${ offerId }. End request with error: ${ res.statusCode }`);
+    return logger.error(`Cant find offer with id: ${ offerId }.`);
   }
 
   return next();

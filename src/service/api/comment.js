@@ -41,7 +41,7 @@ const createCommentRouter = ({offerService, commentService, logger}) => {
     if (!deletedComment) {
       res.status(HttpStatusCode.NOT_FOUND).send(`Not found comment with id: ${ commentId }`);
 
-      return logger.error(`Cant find comment with id: ${ commentId }. End request with error: ${ res.statusCode }`);
+      return logger.error(`Cant find comment with id: ${ commentId }.`);
     }
 
     return res.status(HttpStatusCode.OK).json(deletedComment);

@@ -17,7 +17,7 @@ const createSearchRouter = ({offerService, logger}) => {
     if (!query) {
       res.status(HttpStatusCode.BAD_REQUEST).send(`Invalid query`);
 
-      return logger.error(`Invalid query. End request with error: ${ res.statusCode }`);
+      return logger.error(`Invalid query.`);
     }
 
     const foundedOffers = offerService.findAllByTitle(query);
@@ -25,7 +25,7 @@ const createSearchRouter = ({offerService, logger}) => {
     if (!foundedOffers.length) {
       res.status(HttpStatusCode.NOT_FOUND).send(`Not found offers which includes: ${ query }`);
 
-      return logger.error(`Not found offers which includes: ${ query }. End request with error: ${ res.statusCode }`);
+      return logger.error(`Not found offers which includes: ${ query }.`);
     }
 
     return res.status(HttpStatusCode.OK).json(foundedOffers);
