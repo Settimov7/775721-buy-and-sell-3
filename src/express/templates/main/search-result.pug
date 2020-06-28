@@ -9,9 +9,9 @@ block content
           | Найдено публикаций:
           span.js-results  #{results.length}
         ul.search-results__list
-          each result in results
+          each result, index in results
             li.search-results__item
-              .ticket-card.ticket-card--color05
+              div(class='ticket-card ticket-card--color0' + (index.toString().slice(-1)))
                 .ticket-card__img
                   img(src='/img/' + result.picture, srcset='/img/' + (result.picture.replace(/\.\w+$/, '')) + '@2x' + (result.picture.match(/\.\w+$/)) +' 2x', alt=result.title)
                 .ticket-card__info
