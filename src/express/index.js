@@ -21,6 +21,8 @@ app.set(`views`, path.resolve(__dirname, TEMPLATES_DIR));
 
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 
+app.use(express.urlencoded({extended: false}));
+
 app.use(`/`, mainRouter);
 app.use(`/my`, myRouter);
 app.use(`/offers`, offersRouter);

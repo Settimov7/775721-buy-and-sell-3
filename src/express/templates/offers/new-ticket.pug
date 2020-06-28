@@ -7,38 +7,48 @@ block content
         h1.ticket-form__title Новая публикация
         .ticket-form__tile
           form.ticket-form__form.form(action=action, method='POST', autocomplete='off')
-            .ticket-form__avatar-container.js-preview-container
-              .ticket-form__avatar.js-preview
-              .ticket-form__field-avatar
-                input#avatar.visually-hidden.js-file-field(type='file', name='avatar')
-                label(for='avatar')
-                  span.ticket-form__text-upload Загрузить фото…
-                  span.ticket-form__text-another Загрузить другое фото…
+            if offer && offer.picture
+              .ticket-form__avatar-container.js-preview-container.uploaded
+                .ticket-form__avatar.js-preview
+                  img(src='/img/' + offer.picture, srcset='/img/' + (offer.picture.replace(/\.\w+$/, '')) + '@2x' + (offer.picture.match(/\.\w+$/)) + ' 2x', alt=offer.title)
+                .ticket-form__field-avatar
+                  input#avatar.visually-hidden.js-file-field(type='file', name='avatar')
+                  label(for='avatar')
+                    span.ticket-form__text-upload Загрузить фото…
+                    span.ticket-form__text-another Загрузить другое фото…
+            else
+              .ticket-form__avatar-container.js-preview-container
+                .ticket-form__avatar.js-preview
+                .ticket-form__field-avatar
+                  input#avatar.visually-hidden.js-file-field(type='file', name='avatar')
+                  label(for='avatar')
+                    span.ticket-form__text-upload Загрузить фото…
+                    span.ticket-form__text-another Загрузить другое фото…
             .ticket-form__content
               .ticket-form__row
                 .form__field
-                  input#ticket-name.js-field(type='text', name='title', required)
+                  input#ticket-name.js-field(type='text', name='title', value=(offer && offer.title ? offer.title : ''), required)
                   label(for='ticket-name') Название
                   span Обязательное поле
               .ticket-form__row
                 .form__field
-                  textarea#comment-field.js-field(name='description', cols='30', rows='10', maxlength='400', minlength='50')
+                  textarea#comment-field.js-field(name='description', cols='30', rows='10', maxlength='400', minlength='50') #{offer && offer.description ? offer.description : ''}
                   label(for='comment-field') Описание
                   span Обязательное поле
               .ticket-form__row
-                select#category-field.form__select.js-multiple-select(name='category', data-label='Выбрать категорию публикации')
+                select#category-field.form__select.js-multiple-select(name='category', data-label='Выбрать категорию публикации', multiple)
                   each category, index in categories
-                    option(value=(index + 1)) #{category}
+                    option(value=(index + 1), selected=(offer && offer.category ? offer.category.includes(category) : false)) #{category}
               .ticket-form__row
                 .form__field.form__field--price
-                  input#price-field.js-field.js-price(type='number', name='sum', min='1', required)
+                  input#price-field.js-field.js-price(type='number', name='sum', min='1', value=(offer && offer.sum ? offer.sum : ''), required)
                   label(for='price-field') Цена
                   span Обязательное поле
                 .form__switch.switch
                   .switch__item
-                    input#buy-field.visually-hidden(type='radio', name='type', value='offer')
+                    input#buy-field.visually-hidden(type='radio', name='type', value='offer', checked=(offer && offer.type === 'offer'))
                     label.switch__button(for='buy-field') Куплю
                   .switch__item
-                    input#sell-field.visually-hidden(type='radio', name='type', value='sale')
+                    input#sell-field.visually-hidden(type='radio', name='type', value='sale', checked=(offer && offer.type === 'sale'))
                     label.switch__button(for='sell-field') Продам
             button.form__button.btn.btn--medium.js-button(type='submit', disabled) Опубликовать
