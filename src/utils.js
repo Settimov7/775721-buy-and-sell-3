@@ -1,5 +1,9 @@
 'use strict';
 
+const fs = require(`fs`).promises;
+
+const chalk = require(`chalk`);
+
 exports.getRandomInt = (min, max) => {
   const intMin = Math.ceil(min);
   const intMax = Math.floor(max);
@@ -23,4 +27,18 @@ exports.hasAllExpectedProperties = (object, expectedProperties) => {
   const objectProperties = Object.keys(object);
 
   return expectedProperties.every((expectedProperty) => objectProperties.includes(expectedProperty));
+};
+
+exports.readContent = async (filePath) => {
+  let result = [];
+
+  try {
+    const content = await fs.readFile(filePath, `utf-8`);
+
+    result = content.split(`\n`).filter(Boolean);
+  } catch (error) {
+    console.error(chalk.red(error));
+  }
+
+  return result;
 };
