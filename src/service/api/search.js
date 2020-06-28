@@ -12,20 +12,20 @@ const createSearchRouter = ({offerService, logger}) => {
   const router = new Router();
 
   router.get(Route.INDEX, (req, res) => {
-    const {query} = req.query;
+    const decodedQuery = decodeURI(req.query.query);
 
-    if (!query) {
+    if (!decodedQuery) {
       res.status(HttpStatusCode.BAD_REQUEST).send(`Invalid query`);
 
       return logger.error(`Invalid query.`);
     }
 
-    const foundedOffers = offerService.findAllByTitle(query);
+    const foundedOffers = offerService.findAllByTitle(decodedQuery);
 
     if (!foundedOffers.length) {
-      res.status(HttpStatusCode.NOT_FOUND).send(`Not found offers which includes: ${ query }`);
+      res.status(HttpStatusCode.NOT_FOUND).send(`Not found offers which includes: ${ decodedQuery }`);
 
-      return logger.error(`Not found offers which includes: ${ query }.`);
+      return logger.error(`Not found offers which includes: ${ decodedQuery }.`);
     }
 
     return res.status(HttpStatusCode.OK).json(foundedOffers);
