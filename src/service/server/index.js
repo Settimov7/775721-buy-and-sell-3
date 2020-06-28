@@ -33,7 +33,7 @@ const createServer = async ({offers, logger = pinoLogger} = {}) => {
   const router = await createRouter({offerService, commentService, categoryService, logger});
 
   server.use((req, res, next) => {
-    logger.debug(`Start request to url: ${ req.url }`);
+    logger.debug(`Start ${ req.method } request to url: ${ req.url }`);
 
     return next();
   });
@@ -42,6 +42,8 @@ const createServer = async ({offers, logger = pinoLogger} = {}) => {
     next();
 
     if (res.headersSent) {
+      // res.statusCode будет всегда равен 200. Хотелось бы логировать актуальное значение.
+      //  Если ли какие то способы, тут получить актуальный объект response?
       return logger.info(`End request with status code ${ res.statusCode }`);
     }
 
