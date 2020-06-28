@@ -14,7 +14,7 @@ exports.postAddPost = async (req, res) => {
   const categories = await readContent(ContentFilePath.CATEGORIES);
   const {avatar, title, description, category, sum, type} = req.body;
 
-  const offerCategories = category.map((index) => categories[index - 1]);
+  const offerCategories = Array.isArray(category) ? category.map((index) => categories[index - 1]) : categories[category - 1];
 
   const offer = {
     title,
