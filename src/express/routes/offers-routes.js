@@ -2,7 +2,7 @@
 
 const {Router} = require(`express`);
 
-const {getAddPost, postAddPost, getPostEdit} = require('../controllers/offers-controllers');
+const {getAddPost, postAddPost, getPostEdit} = require(`../controllers/offers-controllers`);
 
 const router = new Router();
 

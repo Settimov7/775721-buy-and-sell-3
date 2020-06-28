@@ -2,7 +2,7 @@
 
 const {Router} = require(`express`);
 
-const {getHomePage, getSearch} = require('../controllers/main-controllers');
+const {getHomePage, getSearch} = require(`../controllers/main-controllers`);
 
 const router = new Router();
 

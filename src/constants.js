@@ -24,4 +24,4 @@ exports.ContentFilePath = {
   TITLES: `./data/titles.txt`,
   CATEGORIES: `./data/categories.txt`,
   COMMENTS: `./data/comments.txt`,
-}
+};

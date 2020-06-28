@@ -1,7 +1,7 @@
 'use strict';
 
 const {request} = require(`../request`);
-const {readContent} = require('../../utils');
+const {readContent} = require(`../../utils`);
 const {HttpStatusCode, ContentFilePath} = require(`../../constants`);
 
 exports.getAddPost = async (req, res) => {
