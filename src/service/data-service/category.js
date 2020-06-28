@@ -2,7 +2,7 @@
 
 class CategoryService {
   findAll(offers) {
-    const categories = offers.reduce((acc, {category}) => acc.add(...category), new Set());
+    const categories = offers.reduce((acc, {category}) => new Set([...acc, ...category]), new Set());
 
     return [...categories];
   }
