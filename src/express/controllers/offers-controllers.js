@@ -2,6 +2,7 @@
 
 const {request} = require(`../request`);
 const {readContent} = require(`../../utils`);
+const {API_URL} = require(`../constants`);
 const {HttpStatusCode, ContentFilePath} = require(`../../constants`);
 
 exports.getAddPost = async (req, res, next) => {
@@ -30,7 +31,7 @@ exports.postAddPost = async (req, res, next) => {
       sum,
     };
 
-    const {statusCode} = await request.post({url: `http://localhost:3000/api/offers`, json: true, body: offer});
+    const {statusCode} = await request.post({url: `${ API_URL }/offers`, json: true, body: offer});
 
     if (statusCode === HttpStatusCode.CREATED) {
       return res.redirect(`/my`);
@@ -45,7 +46,7 @@ exports.postAddPost = async (req, res, next) => {
 exports.getPostEdit = async (req, res, next) => {
   try {
     const {id} = req.params;
-    const {statusCode, body} = await request.get({url: `http://localhost:3000/api/offers/${ id }`, json: true});
+    const {statusCode, body} = await request.get({url: `${ API_URL }/offers/${ id }`, json: true});
 
     if (statusCode === HttpStatusCode.NOT_FOUND) {
       res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
