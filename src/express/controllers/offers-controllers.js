@@ -9,7 +9,7 @@ exports.getAddPost = async (req, res, next) => {
   try {
     const categories = await readContent(ContentFilePath.CATEGORIES);
 
-    res.render(`offers/new-ticket`, {categories, action: `http://localhost:8080/offers/add`});
+    res.render(`offers/new-ticket`, {categories});
   } catch (error) {
     next(error);
   }
