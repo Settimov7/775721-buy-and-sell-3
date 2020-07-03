@@ -5,14 +5,10 @@ const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
 const {nanoid} = require(`nanoid`);
 
-const {getRandomInt, shuffle, printNumWithLead0} = require(`../../utils`);
-const {ExitCode, MAX_ID_LENGTH} = require(`../../constants`);
+const {getRandomInt, shuffle, printNumWithLead0, readContent} = require(`../../utils`);
+const {ExitCode, MAX_ID_LENGTH, ContentFilePath} = require(`../../constants`);
 
 const FILE_NAME = `mocks.json`;
-const FILE_SENTENCES_PATH = `./data/sentences.txt`;
-const FILE_TITLES_PATH = `./data/titles.txt`;
-const FILE_CATEGORIES_PATH = `./data/categories.txt`;
-const FILE_COMMENTS_PATH = `./data/comments.txt`;
 
 const OffersCount = {
   DEFAULT: 1,
@@ -79,20 +75,6 @@ const generateOffers = (count, {titles, categories, sentences, comments}) => (
   }))
 );
 
-const readContent = async (filePath) => {
-  let result = [];
-
-  try {
-    const content = await fs.readFile(filePath, `utf-8`);
-
-    result = content.split(`\n`).filter(Boolean);
-  } catch (error) {
-    console.error(chalk.red(error));
-  }
-
-  return result;
-};
-
 module.exports = {
   name: `--generate`,
   async run(args) {
@@ -111,10 +93,10 @@ module.exports = {
       process.exit(ExitCode.ERROR);
     }
 
-    const titles = await readContent(FILE_TITLES_PATH);
-    const categories = await readContent(FILE_CATEGORIES_PATH);
-    const sentences = await readContent(FILE_SENTENCES_PATH);
-    const comments = await readContent(FILE_COMMENTS_PATH);
+    const titles = await readContent(ContentFilePath.TITLES);
+    const categories = await readContent(ContentFilePath.CATEGORIES);
+    const sentences = await readContent(ContentFilePath.SENTENCES);
+    const comments = await readContent(ContentFilePath.COMMENTS);
 
     const content = JSON.stringify(generateOffers(count, {titles, categories, sentences, comments}));
 

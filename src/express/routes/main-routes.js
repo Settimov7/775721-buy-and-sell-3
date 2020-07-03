@@ -2,11 +2,13 @@
 
 const {Router} = require(`express`);
 
+const {getHomePage, getSearch} = require(`../controllers/main-controllers`);
+
 const router = new Router();
 
-router.get(`/`, (req, res) => res.render(`main/main`));
+router.get(`/`, getHomePage);
 router.get(`/register`, (req, res) => res.render(`main/sign-up`));
 router.get(`/login`, (req, res) => res.render(`main/login`));
-router.get(`/search`, (req, res) => res.render(`main/search-result`));
+router.get(`/search`, getSearch);
 
 module.exports = router;
