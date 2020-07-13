@@ -21,19 +21,24 @@ CREATE DATABASE academy_buy_sell
     TABLESPACE = pg_default
     CONNECTION LIMIT = -1;
 
-DROP TABLE IF EXISTS offers_categories;
-DROP TABLE IF EXISTS offers_comments;
-DROP TABLE IF EXISTS offers;
-DROP TABLE IF EXISTS types;
-DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS offers_categories;
+DROP TABLE IF EXISTS offers;
+DROP TYPE IF EXISTS offer_type;
+DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS users;
 
-CREATE TABLE types
+CREATE TABLE users
 (
 	id BIGSERIAL PRIMARY KEY,
-	title VARCHAR(25) NOT NULL
+	first_name VARCHAR(50) NOT NULL,
+	last_name VARCHAR(50) NOT NULL,
+	email VARCHAR(320) UNIQUE NOT NULL,
+	password VARCHAR(100) NOT NULL,
+	avatar TEXT
 );
+
+CREATE TYPE offer_type AS ENUM ('buy', 'sell');
 
 CREATE TABLE offers
 (
@@ -41,12 +46,13 @@ CREATE TABLE offers
 	title VARCHAR(100) NOT NULL,
 	image TEXT,
 	sum NUMERIC(2) NOT NULL,
-	type_id BIGINT NOT NULL,
+	type offer_type NOT NULL,
 	description VARCHAR(1000) NOT NULL,
 	created_date DATE NOT NULL,
-	FOREIGN KEY(type_id) REFERENCES types
-		ON UPDATE CASCADE
-		ON DELETE CASCADE
+	user_id BIGINT NOT NULL,
+  FOREIGN KEY(user_id) REFERENCES users
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
 );
 
 CREATE TABLE categories
@@ -69,36 +75,17 @@ CREATE TABLE offers_categories
     ON DELETE CASCADE
 );
 
-CREATE TABLE users
-(
-	id BIGSERIAL PRIMARY KEY,
-	first_name VARCHAR(50) NOT NULL,
-	last_name VARCHAR(50) NOT NULL,
-	email VARCHAR(320) NOT NULL,
-	password VARCHAR(100) NOT NULL,
-	avatar TEXT
-);
-
 CREATE TABLE comments
 (
   id BIGSERIAL PRIMARY KEY,
   message VARCHAR(300) NOT NULL,
   created_date DATE NOT NULL,
   user_id BIGINT NOT NULL,
+  offer_id BIGINT NOT NULL,
   FOREIGN KEY(user_id) REFERENCES users
     ON UPDATE CASCADE
-    ON DELETE CASCADE
-);
-
-CREATE TABLE offers_comments
-(
-  offer_id BIGINT,
-  comment_id BIGINT,
-  CONSTRAINT offers_comments_pk PRIMARY KEY(offer_id, comment_id),
-  FOREIGN KEY(offer_id) REFERENCES offers
-    ON UPDATE CASCADE
     ON DELETE CASCADE,
-  FOREIGN KEY(comment_id) REFERENCES comments
+  FOREIGN KEY(offer_id) REFERENCES users
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
