@@ -38,6 +38,8 @@ CREATE TABLE users
 	avatar TEXT
 );
 
+CREATE UNIQUE INDEX email_idx ON users ((lower(email)));
+
 CREATE TYPE offer_type AS ENUM ('buy', 'sell');
 
 CREATE TABLE offers
@@ -54,6 +56,9 @@ CREATE TABLE offers
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
+
+CREATE INDEX title_idx ON offers ((lower(title)));
+CREATE INDEX offers_created_date_idx ON offers (created_date);
 
 CREATE TABLE categories
 (
@@ -89,6 +94,9 @@ CREATE TABLE comments
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
+
+CREATE INDEX offer_id_idx ON comments (user_id);
+CREATE INDEX comments_created_date_idx ON comments (created_date);
 
 
 
