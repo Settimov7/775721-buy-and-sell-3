@@ -20,7 +20,7 @@ describe(`Offer API end-points`, () => {
         description: `Если найдёте дешевле — сброшу цену. Бонусом отдам все аксессуары. Даю недельную гарантию. Продаю с болью в сердце...`,
         picture: `item12.jpg`,
         title: `Продам отличную подборку фильмов на VHS`,
-        type: `sale`,
+        type: `sell`,
         sum: 25913,
         comments: [
           {
@@ -43,7 +43,7 @@ describe(`Offer API end-points`, () => {
         description: `Две страницы заляпаны свежим кофе. Даю недельную гарантию. Если найдёте дешевле — сброшу цену.`,
         picture: `item13.jpg`,
         title: `Продам отличную подборку фильмов на VHS`,
-        type: `offer`,
+        type: `buy`,
         sum: 31230,
         comments: [
           {
@@ -175,7 +175,7 @@ describe(`Offer API end-points`, () => {
       description: `Если найдёте дешевле — сброшу цену. Бонусом отдам все аксессуары. Даю недельную гарантию. Продаю с болью в сердце...`,
       picture: `item12.jpg`,
       title: `Продам отличную подборку фильмов на VHS`,
-      type: `sale`,
+      type: `sell`,
       sum: 25913,
       comments: [
         {
@@ -227,7 +227,7 @@ describe(`Offer API end-points`, () => {
       description: `Если найдёте дешевле — сброшу цену. Бонусом отдам все аксессуары. Даю недельную гарантию. Продаю с болью в сердце...`,
       picture: `item12.jpg`,
       title: `Продам отличную подборку фильмов на VHS`,
-      type: `sale`,
+      type: `sell`,
       sum: 25913,
       comments: [
         {
@@ -316,7 +316,7 @@ describe(`Offer API end-points`, () => {
       description: `Если найдёте дешевле — сброшу цену. Бонусом отдам все аксессуары. Даю недельную гарантию. Продаю с болью в сердце...`,
       picture: `item12.jpg`,
       title: `Продам отличную подборку фильмов на VHS`,
-      type: `sale`,
+      type: `sell`,
       sum: 25913,
       comments: [
         {
@@ -339,7 +339,7 @@ describe(`Offer API end-points`, () => {
       description: `Две страницы заляпаны свежим кофе. Даю недельную гарантию. Если найдёте дешевле — сброшу цену.`,
       picture: `item13.jpg`,
       title: `Продам отличную подборку фильмов на VHS`,
-      type: `offer`,
+      type: `buy`,
       sum: 31230,
       comments: [
         {
