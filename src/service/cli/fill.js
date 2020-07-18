@@ -76,6 +76,14 @@ const DAY_IN_MILLISECONDS = 86400000;
 
 const DATE_LIMIT_IN_DAYS = 90;
 
+const EntityKeyToEntityPropertiesOrder = {
+  users: [`id`, `firstName`, `lastName`, `email`, `password`, `avatar`],
+  offers: [`id`, `title`, `image`, `sum`, `type`, `description`, `createdDate`, `userId`],
+  categories: [`id`, `title`, `image`],
+  [`offers_categories`]: [`offerId`, `categoryId`],
+  comments: [`id`, `message`, `createdDate`, `userId`, `offerId`],
+};
+
 const createRandomDate = () => {
   const date = new Date(Date.now() - getRandomInt(0, DAY_IN_MILLISECONDS * DATE_LIMIT_IN_DAYS));
 
@@ -210,23 +218,28 @@ const createComments = async (users, offers) => {
   return comments;
 };
 
-const createValues = (entities) => entities.map((entity) => {
-  let value = Object.values(entity).map((entityValue) => typeof entityValue === `string` ? `'${entityValue}'` : entityValue).join(`,`);
+const createValues = (entities, propertiesOrder) => entities.map((entity) => {
+  let value = propertiesOrder.map((propertyKey) => {
+    const entityValue = entity[propertyKey];
+
+    return typeof entityValue === `string` ? `'${entityValue}'` : entityValue;
+  }).join(`,`);
 
   return `(${ value })`;
 });
 
-const createInsertCommand = ({tableName, entities}) => {
-  const values = createValues(entities);
+const createInsertCommand = ({tableName, entity, propertiesOrder}) => {
+  const values = createValues(entity, propertiesOrder);
 
   return `--Add ${ tableName }\nINSERT INTO ${ tableName } VALUES\n${ values.join(`,\n`) };`;
 };
 
 const createCommandsForCreatingDBPrimaryData = (data) => {
   const createEntitiesCommands = Object.keys(data).map((entityKey) => {
-    const entities = data[entityKey];
+    const entity = data[entityKey];
+    const propertiesOrder = EntityKeyToEntityPropertiesOrder[entityKey];
 
-    return createInsertCommand({tableName: entityKey, entities});
+    return createInsertCommand({tableName: entityKey, entity, propertiesOrder});
   });
 
   return createEntitiesCommands.join(`\n\n`);
