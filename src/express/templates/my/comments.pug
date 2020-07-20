@@ -13,9 +13,9 @@ block content
                 span.announce-card__info
                   span.announce-card__price ₽ #{offer.sum}
                   span.announce-card__type
-                    if offer.type === 'sale'
+                    if offer.type === 'sell'
                       | Продам
-                    else if offer.type === 'offer'
+                    else if offer.type === 'buy'
                       | Куплю
             ul.comments-list
               each comment in comments[index]

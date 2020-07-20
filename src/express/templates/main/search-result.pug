@@ -16,9 +16,9 @@ block content
                   img(src='/img/' + result.picture, srcset='/img/' + (result.picture.replace(/\.\w+$/, '')) + '@2x' + (result.picture.match(/\.\w+$/)) +' 2x', alt=result.title)
                 .ticket-card__info
                   span.ticket-card__label
-                    if result.type === 'sale'
+                    if result.type === 'sell'
                       | Продам
-                    else if result.type === 'offer'
+                    else if result.type === 'buy'
                       | Куплю
                   .ticket-card__categories
                     each category in result.category

@@ -16,6 +16,8 @@ module.exports = {
       --help:               печатает этот текст
       --generate <count>:   формирует файл mocks.json
       --server <port>:      запускает http-сервер
+      --fill <count>:       формирует файл с запросами для начального заполнения
+                            БД указанным кол-вом объявлений
     `;
 
     console.info(chalk.gray(text));
