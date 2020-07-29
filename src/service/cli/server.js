@@ -4,6 +4,7 @@ const {createServer} = require(`../server`);
 const {sequelize} = require(`../database`);
 const {pinoLogger} = require(`../logger`);
 const {API_SERVER_PORT} = require(`../../config`);
+const {ExitCode} = require(`../../constants`);
 
 module.exports = {
   name: `--server`,
@@ -19,6 +20,8 @@ module.exports = {
       pinoLogger.info(`Successfully connected to ${result.config.database} database`);
     } catch (error) {
       pinoLogger.error(`Can't connect to database. Error: ${ error }`);
+
+      process.exit(ExitCode.ERROR);
     }
 
     try {
