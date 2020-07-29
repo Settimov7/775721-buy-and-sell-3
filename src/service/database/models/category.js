@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = (sequelize, DataTypes) => {
+exports.createCategoryModel = (sequelize, DataTypes) => {
   class Category extends sequelize.Sequelize.Model {
   }
 
@@ -22,8 +22,17 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     timestamps: false,
     paranoid: false,
-    modelName: `category`
+    modelName: `category`,
   });
 
   return Category;
+};
+
+exports.createCategoryAssociations = ({Category, Offer}) => {
+  Category.belongsToMany(Offer, {
+    through: `offers_categories`,
+    foreignKey: `category_id`,
+    timestamps: false,
+    paranoid: false,
+  });
 };

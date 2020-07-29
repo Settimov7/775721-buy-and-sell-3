@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = (sequelize, DataTypes) => {
+exports.createCommentModel = (sequelize, DataTypes) => {
   class Comment extends sequelize.Sequelize.Model {
   }
 
@@ -20,8 +20,18 @@ module.exports = (sequelize, DataTypes) => {
     createdAt: `created_date`,
     updatedAt: false,
     paranoid: false,
-    modelName: `comment`
+    modelName: `comment`,
   });
 
   return Comment;
+};
+
+exports.createCommentAssociations = ({Comment, Offer, User}) => {
+  Comment.belongsTo(User, {
+    foreignKey: `user_id`,
+  });
+
+  Comment.belongsTo(Offer, {
+    foreignKey: `offer_id`,
+  });
 };
