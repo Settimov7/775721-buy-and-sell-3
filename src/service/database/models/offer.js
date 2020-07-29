@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
     },
     sum: {
-      type: DataTypes.DOUBLE,
+      type: DataTypes.DECIMAL(10, 2), /* eslint-disable-line */
       allowNull: false,
     },
     type: {
