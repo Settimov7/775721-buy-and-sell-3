@@ -12,6 +12,7 @@ Thumbs.db
 node_modules/
 mocks.json
 fill-db.sql
+.env
 
 # Папка с собранными файлами проекта
 build/

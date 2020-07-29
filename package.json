@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/Settimov7/775721-buy-and-sell-3#readme",
   "devDependencies": {
+    "dotenv": "8.2.0",
     "eslint": "6.8.0",
     "eslint-config-htmlacademy": "0.5.2",
     "jest": "26.0.1",
@@ -34,8 +35,10 @@
     "cross-env": "7.0.2",
     "express": "4.17.1",
     "nanoid": "3.1.9",
+    "pg": "8.3.0",
     "pino": "6.3.2",
     "pug": "2.0.4",
-    "request": "2.88.2"
+    "request": "2.88.2",
+    "sequelize": "6.3.3"
   }
 }

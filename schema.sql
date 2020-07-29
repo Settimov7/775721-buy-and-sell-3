@@ -47,7 +47,7 @@ CREATE TABLE offers
 	id BIGSERIAL PRIMARY KEY,
 	title VARCHAR(100) NOT NULL,
 	image TEXT,
-	sum DOUBLE PRECISION NOT NULL,
+	sum DECIMAL(10, 2) NOT NULL,
 	type offer_type NOT NULL,
 	description VARCHAR(1000) NOT NULL,
 	created_date DATE NOT NULL,
