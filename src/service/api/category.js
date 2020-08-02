@@ -8,14 +8,17 @@ const Route = {
   INDEX: `/`,
 };
 
-const createCategoryRouter = ({offerService, categoryService}) => {
+const createCategoryRouter = ({categoryService}) => {
   const router = new Router();
 
-  router.get(Route.INDEX, (req, res) => {
-    const offers = offerService.findAll();
-    const categories = categoryService.findAll(offers);
+  router.get(Route.INDEX, async (req, res, next) => {
+    try {
+      const categories = await categoryService.findAll();
 
-    res.status(HttpStatusCode.OK).json(categories);
+      res.status(HttpStatusCode.OK).json(categories);
+    } catch (error) {
+      next(error);
+    }
   });
 
   return router;
