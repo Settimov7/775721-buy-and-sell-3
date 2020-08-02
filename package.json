@@ -4,7 +4,7 @@
   "description": "Учебный проект: \"Куплю.Продам\"",
   "main": "./src/service/service.js",
   "scripts": {
-    "test::rest": "jest src/service/api",
+    "test::rest": "jest --maxWorkers=1 src/service/api",
     "test": "npm run eslint && npm run test::rest",
     "eslint": "eslint --ext .js src/",
     "start::debug": "cross-env LOG_LEVEL=debug nodemon ./src/service/service.js --server 3000 | pino-pretty",
