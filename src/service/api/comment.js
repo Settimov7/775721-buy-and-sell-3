@@ -12,39 +12,51 @@ const Route = {
 
 const EXPECTED_PROPERTIES = [`text`];
 
-const createCommentRouter = ({offerService, commentService, logger}) => {
+const createCommentRouter = ({commentService, logger}) => {
   const router = new Router({mergeParams: true});
   const isRequestDataValidMiddleware = isRequestDataValid({expectedProperties: EXPECTED_PROPERTIES, logger});
 
-  router.get(Route.INDEX, (req, res) => {
+  router.get(Route.INDEX, async (req, res, next) => {
     const {offerId} = req.params;
-    const offer = offerService.findById(offerId);
-    const comments = commentService.findAll(offer);
 
-    res.status(HttpStatusCode.OK).json(comments);
+    try {
+      const comments = await commentService.findAll(offerId);
+
+      res.status(HttpStatusCode.OK).json(comments);
+    } catch (error) {
+      next(error);
+    }
   });
 
-  router.post(Route.INDEX, isRequestDataValidMiddleware, (req, res) => {
+  router.post(Route.INDEX, isRequestDataValidMiddleware, async (req, res, next) => {
     const {offerId} = req.params;
     const {text} = req.body;
-    const offer = offerService.findById(offerId);
-    const newComment = commentService.create(offer, text);
 
-    res.status(HttpStatusCode.CREATED).json(newComment);
+    try {
+      const newComment = await commentService.create(offerId, text);
+
+      res.status(HttpStatusCode.CREATED).json(newComment);
+    } catch (error) {
+      next(error);
+    }
   });
 
-  router.delete(Route.COMMENT, (req, res) => {
-    const {offerId, commentId} = req.params;
-    const offer = offerService.findById(offerId);
-    const deletedComment = commentService.delete(offer, commentId);
+  router.delete(Route.COMMENT, async (req, res, next) => {
+    const {commentId} = req.params;
 
-    if (!deletedComment) {
-      res.status(HttpStatusCode.NOT_FOUND).send(`Not found comment with id: ${ commentId }`);
+    try {
+      const deletedComment = await commentService.delete(commentId);
 
-      return logger.error(`Cant find comment with id: ${ commentId }.`);
+      if (!deletedComment) {
+        res.status(HttpStatusCode.NOT_FOUND).send(`Not found comment with id: ${ commentId }`);
+
+        return logger.error(`Cant find comment with id: ${ commentId }.`);
+      }
+
+      return res.status(HttpStatusCode.OK).json(deletedComment);
+    } catch (error) {
+      return next(error);
     }
-
-    return res.status(HttpStatusCode.OK).json(deletedComment);
   });
 
   return router;

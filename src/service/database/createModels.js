@@ -13,8 +13,8 @@ exports.createModels = (sequelize) => {
   const Category = createCategoryModel(sequelize, DataTypes);
   const Comment = createCommentModel(sequelize, DataTypes);
 
-  createOfferAssociations({Offer, Category, User});
-  createUserAssociations({Offer, User});
+  createOfferAssociations({Offer, Category, User, Comment});
+  createUserAssociations({Offer, User, Comment});
   createCategoryAssociations({Offer, Category});
   createCommentAssociations({Comment, Offer, User});
 

@@ -42,7 +42,7 @@ exports.createOfferModel = (sequelize, DataTypes) => {
   return Offer;
 };
 
-exports.createOfferAssociations = ({Offer, User, Category}) => {
+exports.createOfferAssociations = ({Offer, User, Category, Comment}) => {
   Offer.belongsTo(User, {
     foreignKey: `user_id`,
   });
@@ -52,5 +52,10 @@ exports.createOfferAssociations = ({Offer, User, Category}) => {
     foreignKey: `offer_id`,
     timestamps: false,
     paranoid: false,
+  });
+
+  Offer.hasMany(Comment, {
+    as: `comments`,
+    foreignKey: `offer_id`,
   });
 };
