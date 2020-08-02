@@ -19,43 +19,63 @@ const createOfferRouter = ({offerService, commentRouter, logger}) => {
   const isRequestDataValidMiddleware = isRequestDataValid({expectedProperties: EXPECTED_PROPERTIES, logger});
   const isOfferExistsMiddleware = isOfferExists({service: offerService, logger});
 
-  router.get(Route.INDEX, (req, res) => {
-    const offers = offerService.findAll();
+  router.get(Route.INDEX, async (req, res, next) => {
+    try {
+      const offers = await offerService.findAll();
 
-    res.status(HttpStatusCode.OK).json(offers);
+      res.status(HttpStatusCode.OK).json(offers);
+    } catch (error) {
+      next(error);
+    }
   });
 
-  router.post(Route.INDEX, isRequestDataValidMiddleware, (req, res) => {
+  router.post(Route.INDEX, isRequestDataValidMiddleware, async (req, res, next) => {
     const {category, description, picture, title, type, sum} = req.body;
 
-    const newOffer = offerService.create({category, description, picture, title, type, sum});
+    try {
+      const newOffer = await offerService.create({categories: category, description, picture, title, type, sum});
 
-    res.status(HttpStatusCode.CREATED).json(newOffer);
+      res.status(HttpStatusCode.CREATED).json(newOffer);
+    } catch (error) {
+      next(error);
+    }
   });
 
-  router.get(Route.OFFER, isOfferExistsMiddleware, (req, res) => {
+  router.get(Route.OFFER, isOfferExistsMiddleware, async (req, res, next) => {
     const {offerId} = req.params;
-    const offer = offerService.findById(offerId);
 
-    res.status(HttpStatusCode.OK).json(offer);
+    try {
+      const offer = await offerService.findById(offerId);
+
+      res.status(HttpStatusCode.OK).json(offer);
+    } catch (error) {
+      next(error);
+    }
   });
 
-  router.put(Route.OFFER, [isOfferExistsMiddleware, isRequestDataValidMiddleware], (req, res) => {
+  router.put(Route.OFFER, [isOfferExistsMiddleware, isRequestDataValidMiddleware], async (req, res, next) => {
     const {offerId} = req.params;
-
     const {category, description, picture, title, type, sum} = req.body;
 
-    const updatedOffer = offerService.update({id: offerId, category, description, picture, title, type, sum});
+    try {
+      const updatedOffer = await offerService.update({id: offerId, category, description, picture, title, type, sum});
 
-    res.status(HttpStatusCode.OK).json(updatedOffer);
+      res.status(HttpStatusCode.OK).json(updatedOffer);
+    } catch (error) {
+      next(error);
+    }
   });
 
-  router.delete(Route.OFFER, isOfferExistsMiddleware, (req, res) => {
+  router.delete(Route.OFFER, isOfferExistsMiddleware, async (req, res, next) => {
     const {offerId} = req.params;
 
-    const deletedOffer = offerService.delete(offerId);
+    try {
+      const deletedOffer = await offerService.delete(offerId);
 
-    res.status(HttpStatusCode.OK).json(deletedOffer);
+      res.status(HttpStatusCode.OK).json(deletedOffer);
+    } catch (error) {
+      next(error);
+    }
   });
 
   router.use(Route.COMMENTS, isOfferExistsMiddleware, commentRouter);

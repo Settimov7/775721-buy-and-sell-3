@@ -7,6 +7,7 @@ const {HttpStatusCode, ContentFilePath} = require(`../../constants`);
 
 exports.getAddPost = async (req, res, next) => {
   try {
+    // TODO: Загружать данные из базы
     const categories = await readContent(ContentFilePath.CATEGORIES);
 
     res.render(`offers/new-ticket`, {categories});
@@ -17,10 +18,11 @@ exports.getAddPost = async (req, res, next) => {
 
 exports.postAddPost = async (req, res, next) => {
   try {
+    // TODO: Загружать данные из базы
     const categories = await readContent(ContentFilePath.CATEGORIES);
     const {avatar, title, description, category, sum, type} = req.body;
 
-    const offerCategories = Array.isArray(category) ? category.map((index) => categories[index - 1]) : categories[category - 1];
+    const offerCategories = Array.isArray(category) ? category : [category];
 
     const offer = {
       title,
