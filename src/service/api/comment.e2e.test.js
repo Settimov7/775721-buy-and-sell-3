@@ -1,37 +1,71 @@
 'use strict';
 
-const {describe, it, expect, beforeEach} = require(`@jest/globals`);
-
+const {describe, it, expect, beforeEach, afterAll} = require(`@jest/globals`);
 const request = require(`supertest`);
+
 const {createServer} = require(`../server`);
+const testDataBase = require(`../database/testDataBase`);
 
 describe(`Comment API end-points`, () => {
+  const server = createServer({dataBase: testDataBase});
+
+  const users = [
+    {
+      id: 1,
+      firstName: `Сергей`,
+      lastName: `Иванович`,
+      email: `sergei_ivanovich@mail.local`,
+      password: 123456,
+      avatar: `avatar01.jpg`,
+    },
+  ];
+  const categories = [
+    {
+      id: 1,
+      title: `Игры`,
+      image: `category01.jpg`,
+    },
+  ];
+  const offers = [
+    {
+      id: 1,
+      title: `Куплю новую приставку Xbox`,
+      image: `item01.jpg`,
+      sum: 67782.42,
+      type: `buy`,
+      description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
+      user_id: 1, /* eslint-disable-line */
+    },
+  ];
+  const offersCategories = [
+    {
+      offerId: 1,
+      categoriesIds: [1],
+    },
+  ];
+
+  afterAll(() => {
+    testDataBase.sequelize.close();
+  });
+
   describe(`GET api/offers/:offerId/comments`, () => {
-    const mockComment = {
-      id: `wjK6J3`,
-      text: `С чем связана продажа? Почему так дешёво? Почему в таком ужасном состоянии?`,
-    };
-    const mockOffer = {
-      id: `k2MJRx`,
-      category: [
-        `Животные`,
-        `Журналы`,
-        `Книги`,
-        `Посуда`,
-        `Разное`,
-      ],
-      description: `Если найдёте дешевле — сброшу цену. Бонусом отдам все аксессуары. Даю недельную гарантию. Продаю с болью в сердце...`,
-      picture: `item12.jpg`,
-      title: `Продам отличную подборку фильмов на VHS`,
-      type: `sale`,
-      sum: 25913,
-      comments: [mockComment],
-    };
-    const mockOffers = [mockOffer];
-    let server;
+    const comments = [
+      {
+        id: 1,
+        message: `С чем связана продажа? Почему так дешёво? Почему в таком ужасном состоянии?`,
+        user_id: 1, /* eslint-disable-line */
+        offer_id: 1, /* eslint-disable-line */
+      },
+      {
+        id: 2,
+        message: `Неплохо, но дорого. Почему в таком ужасном состоянии?`,
+        user_id: 1, /* eslint-disable-line */
+        offer_id: 1, /* eslint-disable-line */
+      },
+    ];
 
     beforeEach(async () => {
-      server = await createServer({offers: mockOffers});
+      await testDataBase.resetDataBase({users, categories, offers, offersCategories, comments});
     });
 
     it(`should return status 404 if offer doesn't exist`, async () => {
@@ -41,49 +75,40 @@ describe(`Comment API end-points`, () => {
     });
 
     it(`should return status 200 if offer exist`, async () => {
-      const res = await request(server).get(`/api/offers/${ mockOffer.id }/comments`);
+      const res = await request(server).get(`/api/offers/1/comments`);
 
       expect(res.statusCode).toBe(200);
     });
 
     it(`should return comments`, async () => {
-      const res = await request(server).get(`/api/offers/${ mockOffer.id }/comments`);
+      const expectedFirstComment = {
+        id: 1,
+        message: `С чем связана продажа? Почему так дешёво? Почему в таком ужасном состоянии?`,
+      };
+      const expectedSecondComment = {
+        id: 2,
+        message: `Неплохо, но дорого. Почему в таком ужасном состоянии?`,
+      };
 
-      expect(res.body).toEqual(mockOffer.comments);
+      const res = await request(server).get(`/api/offers/1/comments`);
+      const [firstComment, secondComment] = res.body;
+
+      expect(firstComment).toMatchObject(expectedFirstComment);
+      expect(secondComment).toMatchObject(expectedSecondComment);
     });
   });
 
   describe(`POST api/offers/:offerId/comments`, () => {
-    const mockOffer = {
-      id: `k2MJRx`,
-      category: [
-        `Животные`,
-        `Журналы`,
-        `Книги`,
-        `Посуда`,
-        `Разное`,
-      ],
-      description: `Если найдёте дешевле — сброшу цену. Бонусом отдам все аксессуары. Даю недельную гарантию. Продаю с болью в сердце...`,
-      picture: `item12.jpg`,
-      title: `Продам отличную подборку фильмов на VHS`,
-      type: `sale`,
-      sum: 25913,
-      comments: [
-        {
-          id: `3jYaB2`,
-          text: `Оплата наличными или перевод на карту? Неплохо, но дорого.`,
-        },
-        {
-          id: `63myTU`,
-          text: `Неплохо, но дорого. Почему в таком ужасном состоянии?`,
-        },
-      ],
-    };
-    const mockOffers = [mockOffer];
-    let server;
+    const comments = [
+      {
+        message: `С чем связана продажа? Почему так дешёво? Почему в таком ужасном состоянии?`,
+        user_id: 1, /* eslint-disable-line */
+        offer_id: 1, /* eslint-disable-line */
+      },
+    ];
 
     beforeEach(async () => {
-      server = await createServer({offers: mockOffers});
+      await testDataBase.resetDataBase({users, categories, offers, offersCategories, comments});
     });
 
     it(`should return status 404 if offer doesn't exist`, async () => {
@@ -99,7 +124,7 @@ describe(`Comment API end-points`, () => {
       const data = {
         message: `New comment`,
       };
-      const res = await request(server).post(`/api/offers/${ mockOffer.id }/comments`).send(data);
+      const res = await request(server).post(`/api/offers/1/comments`).send(data);
 
       expect(res.statusCode).toBe(400);
     });
@@ -108,7 +133,7 @@ describe(`Comment API end-points`, () => {
       const data = {
         text: `New comment`,
       };
-      const res = await request(server).post(`/api/offers/${ mockOffer.id }/comments`).send(data);
+      const res = await request(server).post(`/api/offers/1/comments`).send(data);
 
       expect(res.statusCode).toBe(201);
     });
@@ -117,84 +142,81 @@ describe(`Comment API end-points`, () => {
       const data = {
         text: `New comment`,
       };
-      const res = await request(server).post(`/api/offers/${ mockOffer.id }/comments`).send(data);
+      const expectedComment = {
+        message: `New comment`,
+      };
+
+      const res = await request(server).post(`/api/offers/1/comments`).send(data);
 
       expect(res.body).toHaveProperty(`id`);
-      expect(res.body.text).toBe(data.text);
+      expect(res.body).toMatchObject(expectedComment);
     });
 
     it(`should return comments with new comment if new comment was created`, async () => {
       const data = {
         text: `New comment`,
       };
-      const {body} = await request(server).post(`/api/offers/${ mockOffer.id }/comments`).send(data);
-      const res = await request(server).get(`/api/offers/${ mockOffer.id }/comments`);
+      const {body: newComment} = await request(server).post(`/api/offers/1/comments`).send(data);
+      const res = await request(server).get(`/api/offers/1/comments`);
 
-      expect(res.body).toContainEqual(body);
+      expect(res.body).toContainEqual(newComment);
     });
   });
 
   describe(`DELETE api/offers/:offerId/comments/:commentId`, () => {
-    const mockComment1 = {
-      id: `wjK6J3`,
-      text: `С чем связана продажа? Почему так дешёво? Почему в таком ужасном состоянии?`,
-    };
-    const mockComment2 = {
-      id: `63myTU`,
-      text: `Неплохо, но дорого. Почему в таком ужасном состоянии?`,
-    };
-    const mockOffer = {
-      id: `k2MJRx`,
-      category: [
-        `Животные`,
-        `Журналы`,
-        `Книги`,
-        `Посуда`,
-        `Разное`,
-      ],
-      description: `Если найдёте дешевле — сброшу цену. Бонусом отдам все аксессуары. Даю недельную гарантию. Продаю с болью в сердце...`,
-      picture: `item12.jpg`,
-      title: `Продам отличную подборку фильмов на VHS`,
-      type: `sale`,
-      sum: 25913,
-      comments: [mockComment1, mockComment2],
-    };
-    const mockOffers = [mockOffer];
-    let server;
+    const comments = [
+      {
+        id: 1,
+        message: `С чем связана продажа? Почему так дешёво? Почему в таком ужасном состоянии?`,
+        user_id: 1, /* eslint-disable-line */
+        offer_id: 1, /* eslint-disable-line */
+      },
+      {
+        id: 2,
+        message: `Неплохо, но дорого. Почему в таком ужасном состоянии?`,
+        user_id: 1, /* eslint-disable-line */
+        offer_id: 1, /* eslint-disable-line */
+      },
+    ];
 
     beforeEach(async () => {
-      server = await createServer({offers: mockOffers});
+      await testDataBase.resetDataBase({users, categories, offers, offersCategories, comments});
     });
 
     it(`should return status 404 if offer doesn't exist`, async () => {
-      const res = await request(server).delete(`/api/offers/1234/comments/${ mockComment1.id }`);
+      const res = await request(server).delete(`/api/offers/1234/comments/2`);
 
       expect(res.statusCode).toBe(404);
     });
 
     it(`should return status 404 if comment doesn't exist`, async () => {
-      const res = await request(server).delete(`/api/offers/${ mockOffer.id }/comments/1234`);
+      const res = await request(server).delete(`/api/offers/1/comments/1234`);
 
       expect(res.statusCode).toBe(404);
     });
 
     it(`should return status 200 if comment was deleted`, async () => {
-      const res = await request(server).delete(`/api/offers/${ mockOffer.id }/comments/${ mockComment2.id }`);
+      const res = await request(server).delete(`/api/offers/1/comments/2`);
 
       expect(res.statusCode).toBe(200);
     });
 
     it(`should return deleted comment if comment was deleted`, async () => {
-      const res = await request(server).delete(`/api/offers/${ mockOffer.id }/comments/${ mockComment1.id }`);
+      const expectedComment = {
+        id: 2,
+        message: `Неплохо, но дорого. Почему в таком ужасном состоянии?`,
+      };
 
-      expect(res.body).toEqual(mockComment1);
+      const res = await request(server).delete(`/api/offers/1/comments/2`);
+
+      expect(res.body).toMatchObject(expectedComment);
     });
 
-    it(`should return comment without deleted comment if comment was deleted`, async () => {
-      await request(server).delete(`/api/offers/${ mockOffer.id }/comments/${ mockComment2.id }`);
-      const res = await request(server).get(`/api/offers/${ mockOffer.id }/comments`);
+    it(`should return comments without deleted comment if comment was deleted`, async () => {
+      const {body: deletedComment} = await request(server).delete(`/api/offers/1/comments/2`);
+      const res = await request(server).get(`/api/offers/1/comments`);
 
-      expect(res.body).not.toContainEqual(mockComment2);
+      expect(res.body).not.toContainEqual(deletedComment);
     });
   });
 });
