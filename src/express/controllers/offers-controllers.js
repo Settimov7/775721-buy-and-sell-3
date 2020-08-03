@@ -1,26 +1,28 @@
 'use strict';
 
 const {request} = require(`../request`);
-const {readContent} = require(`../../utils`);
 const {API_URL} = require(`../constants`);
-const {HttpStatusCode, ContentFilePath} = require(`../../constants`);
+const {HttpStatusCode} = require(`../../constants`);
 
 exports.getAddPost = async (req, res, next) => {
   try {
-    const categories = await readContent(ContentFilePath.CATEGORIES);
+    const {statusCode, body: categories} = await request.get({url: `${ API_URL }/categories`, json: true});
 
-    res.render(`offers/new-ticket`, {categories});
+    if (statusCode === HttpStatusCode.NOT_FOUND) {
+      return res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
+    }
+
+    return res.render(`offers/new-ticket`, {categories});
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
 exports.postAddPost = async (req, res, next) => {
   try {
-    const categories = await readContent(ContentFilePath.CATEGORIES);
     const {avatar, title, description, category, sum, type} = req.body;
 
-    const offerCategories = Array.isArray(category) ? category.map((index) => categories[index - 1]) : categories[category - 1];
+    const offerCategories = Array.isArray(category) ? category : [category];
 
     const offer = {
       title,
@@ -37,7 +39,17 @@ exports.postAddPost = async (req, res, next) => {
       return res.redirect(`/my`);
     }
 
-    return res.render(`offers/new-ticket`, {categories, action: `http://localhost:8080/offers/add`, offer});
+    const categoriesResult = await request.get({url: `${ API_URL }/categories`, json: true});
+
+    if (categoriesResult.statusCode === HttpStatusCode.NOT_FOUND) {
+      return res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
+    }
+
+    return res.render(`offers/new-ticket`, {
+      categories: categoriesResult.body,
+      action: `http://localhost:8080/offers/add`,
+      offer,
+    });
   } catch (error) {
     return next(error);
   }
@@ -46,16 +58,20 @@ exports.postAddPost = async (req, res, next) => {
 exports.getPostEdit = async (req, res, next) => {
   try {
     const {id} = req.params;
-    const {statusCode, body} = await request.get({url: `${ API_URL }/offers/${ id }`, json: true});
+    const offersResult = await request.get({url: `${ API_URL }/offers/${ id }`, json: true});
 
-    if (statusCode === HttpStatusCode.NOT_FOUND) {
-      res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
+    if (offersResult.statusCode === HttpStatusCode.NOT_FOUND) {
+      return res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
     }
 
-    const categories = await readContent(ContentFilePath.CATEGORIES);
+    const categoriesResult = await request.get({url: `${ API_URL }/categories`, json: true});
 
-    res.render(`offers/ticket-edit`, {offer: body, categories});
+    if (categoriesResult.statusCode === HttpStatusCode.NOT_FOUND) {
+      return res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
+    }
+
+    return res.render(`offers/ticket-edit`, {offer: offersResult.body, categories: categoriesResult.body});
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };

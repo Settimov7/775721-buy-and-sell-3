@@ -3,7 +3,6 @@
 const express = require(`express`);
 
 const {createRouter} = require(`../api`);
-const {getMockData} = require(`../lib/get-mock-data`);
 const {OfferService} = require(`../data-service/offer`);
 const {CommentService} = require(`../data-service/comment`);
 const {CategoryService} = require(`../data-service/category`);
@@ -14,23 +13,14 @@ const Route = {
   API: `/api`,
 };
 
-const createServer = async ({offers, logger = pinoLogger} = {}) => {
+const createServer = ({dataBase, logger = pinoLogger} = {}) => {
   const server = express();
-  let currentOffers = offers;
 
-  if (!offers) {
-    try {
-      currentOffers = await getMockData();
-    } catch (error) {
-      logger.error(`Can't get mock offers. Error: ${ error }`);
-    }
-  }
+  const offerService = new OfferService(dataBase, logger);
+  const commentService = new CommentService(dataBase, logger);
+  const categoryService = new CategoryService(dataBase, logger);
 
-  const offerService = new OfferService(currentOffers);
-  const commentService = new CommentService();
-  const categoryService = new CategoryService();
-
-  const router = await createRouter({offerService, commentService, categoryService, logger});
+  const router = createRouter({offerService, commentService, categoryService, logger});
 
   server.use(express.json());
 
@@ -56,6 +46,13 @@ const createServer = async ({offers, logger = pinoLogger} = {}) => {
     res.status(HttpStatusCode.NOT_FOUND).send(`Not found`);
 
     return logger.error(`Cant find route to url: ${ req.url }.`);
+  });
+
+  // eslint-disable-next-line
+  server.use((error, req, res, next) => {
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(`Error`);
+
+    return logger.error(`End request to url: ${ req.url } with error: ${ error }`);
   });
 
   return server;

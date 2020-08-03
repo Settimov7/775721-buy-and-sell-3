@@ -31,9 +31,12 @@ exports.createOfferModel = (sequelize, DataTypes) => {
       type: DataTypes.STRING(1000), /* eslint-disable-line */
       allowNull: false,
     },
+    createdAt: {
+      field: `created_date`,
+      type: DataTypes.DATEONLY,
+    },
   }, {
     sequelize,
-    createdAt: `created_date`,
     updatedAt: false,
     paranoid: false,
     modelName: `offer`,
@@ -42,7 +45,7 @@ exports.createOfferModel = (sequelize, DataTypes) => {
   return Offer;
 };
 
-exports.createOfferAssociations = ({Offer, User, Category}) => {
+exports.createOfferAssociations = ({Offer, User, Category, Comment}) => {
   Offer.belongsTo(User, {
     foreignKey: `user_id`,
   });
@@ -52,5 +55,10 @@ exports.createOfferAssociations = ({Offer, User, Category}) => {
     foreignKey: `offer_id`,
     timestamps: false,
     paranoid: false,
+  });
+
+  Offer.hasMany(Comment, {
+    as: `comments`,
+    foreignKey: `offer_id`,
   });
 };

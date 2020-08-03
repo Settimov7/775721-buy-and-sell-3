@@ -2,14 +2,19 @@
 
 const {HttpStatusCode} = require(`../../constants`);
 
-const isOfferExists = ({service, logger}) => (req, res, next) => {
+const isOfferExists = ({service, logger}) => async (req, res, next) => {
   const {offerId} = req.params;
-  const isNotExists = !service.isExists(offerId);
 
-  if (isNotExists) {
-    res.status(HttpStatusCode.NOT_FOUND).send(`Not found offer with id: ${ offerId }`);
+  try {
+    const isNotExists = !await service.isExists(offerId);
 
-    return logger.error(`Cant find offer with id: ${ offerId }.`);
+    if (isNotExists) {
+      res.status(HttpStatusCode.NOT_FOUND).send(`Not found offer with id: ${ offerId }`);
+
+      return logger.error(`Cant find offer with id: ${ offerId }.`);
+    }
+  } catch (error) {
+    next(error);
   }
 
   return next();

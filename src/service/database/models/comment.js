@@ -15,9 +15,12 @@ exports.createCommentModel = (sequelize, DataTypes) => {
       type: DataTypes.STRING(300), /* eslint-disable-line */
       allowNull: false,
     },
+    createdAt: {
+      field: `created_date`,
+      type: DataTypes.DATEONLY,
+    },
   }, {
     sequelize,
-    createdAt: `created_date`,
     updatedAt: false,
     paranoid: false,
     modelName: `comment`,

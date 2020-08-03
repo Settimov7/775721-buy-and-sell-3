@@ -16,9 +16,9 @@ const Route = {
 const createRouter = ({offerService, commentService, categoryService, logger}) => {
   const router = new Router();
 
-  const commentRouter = createCommentRouter({offerService, commentService, logger});
+  const commentRouter = createCommentRouter({commentService, logger});
   const offerRouter = createOfferRouter({offerService, commentRouter, logger});
-  const categoryRouter = createCategoryRouter({offerService, categoryService});
+  const categoryRouter = createCategoryRouter({categoryService});
   const searchRouter = createSearchRouter({offerService, logger});
 
   router.use(Route.OFFERS, offerRouter);
