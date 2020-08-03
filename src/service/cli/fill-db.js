@@ -47,8 +47,6 @@ module.exports = {
       const comments = await createComments(users, offers);
       const offersCategories = flattenOffersCategories(createOffersCategories(offers, categories));
 
-      sequelize.close();
-
       await fillDataBase({
         dataBase,
         mocks: {
@@ -60,7 +58,7 @@ module.exports = {
         },
       });
 
-      dataBase.sequelize.close();
+      sequelize.close();
     } catch (error) {
       console.log(chalk.red(`Can't fill database. Error: ${ error }`));
     }
