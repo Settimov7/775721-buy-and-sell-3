@@ -9,12 +9,12 @@ exports.getAddPost = async (req, res, next) => {
     const {statusCode, body: categories} = await request.get({url: `${ API_URL }/categories`, json: true});
 
     if (statusCode === HttpStatusCode.NOT_FOUND) {
-      res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
+      return res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
     }
 
-    res.render(`offers/new-ticket`, {categories});
+    return res.render(`offers/new-ticket`, {categories});
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -42,7 +42,7 @@ exports.postAddPost = async (req, res, next) => {
     const categoriesResult = await request.get({url: `${ API_URL }/categories`, json: true});
 
     if (categoriesResult.statusCode === HttpStatusCode.NOT_FOUND) {
-      res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
+      return res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
     }
 
     return res.render(`offers/new-ticket`, {
@@ -61,17 +61,17 @@ exports.getPostEdit = async (req, res, next) => {
     const offersResult = await request.get({url: `${ API_URL }/offers/${ id }`, json: true});
 
     if (offersResult.statusCode === HttpStatusCode.NOT_FOUND) {
-      res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
+      return res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
     }
 
     const categoriesResult = await request.get({url: `${ API_URL }/categories`, json: true});
 
     if (categoriesResult.statusCode === HttpStatusCode.NOT_FOUND) {
-      res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
+      return res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`);
     }
 
-    res.render(`offers/ticket-edit`, {offer: offersResult.body, categories: categoriesResult.body});
+    return res.render(`offers/ticket-edit`, {offer: offersResult.body, categories: categoriesResult.body});
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
