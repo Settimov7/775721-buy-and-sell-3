@@ -33,11 +33,16 @@ class OfferService {
     };
   }
 
-  async findAll() {
+  async findAll({offset, limit}) {
     const {Offer} = this._models;
 
     try {
-      return await Offer.findAll(this._selectOptions);
+      return await Offer.findAll({
+        ...this._selectOptions,
+        offset,
+        limit,
+        subQuery: false,
+      });
     } catch (error) {
       this._logger.error(`Can't findAll offers. Error: ${ error }`);
 
