@@ -37,12 +37,18 @@ class OfferService {
     const {Offer} = this._models;
 
     try {
-      return await Offer.findAll({
+      const quantity = await Offer.count();
+      const offers = await Offer.findAll({
         ...this._selectOptions,
         offset,
         limit,
         subQuery: false,
       });
+
+      return {
+        offers,
+        quantity,
+      };
     } catch (error) {
       this._logger.error(`Can't findAll offers. Error: ${ error }`);
 

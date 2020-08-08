@@ -7,9 +7,14 @@ const {HttpStatusCode} = require(`../../constants`);
 const REQUIRED_NUMBER_OF_OFFERS = 3;
 
 exports.getMyPage = async (req, res, next) => {
+  let offers = [];
+
   try {
     const {statusCode, body} = await request.get({url: `${ API_URL }/offers`, json: true});
-    const offers = statusCode === HttpStatusCode.OK ? body : [];
+
+    if (statusCode === HttpStatusCode.OK) {
+      offers = body.offers;
+    }
 
     res.render(`my/my-tickets`, {offers});
   } catch (error) {
@@ -20,7 +25,7 @@ exports.getMyPage = async (req, res, next) => {
 exports.getMyComments = async (req, res, next) => {
   try {
     const {statusCode, body} = await request.get({url: `${ API_URL }/offers`, json: true});
-    const offers = statusCode === HttpStatusCode.OK ? body : [];
+    const offers = statusCode === HttpStatusCode.OK ? body.offers : [];
     const userOffers = offers.slice(0, REQUIRED_NUMBER_OF_OFFERS);
 
     const userOffersIds = userOffers.map(({id}) => id);

@@ -23,9 +23,9 @@ const createOfferRouter = ({offerService, commentRouter, logger}) => {
     try {
       const {offset, limit} = req.query;
 
-      const offers = await offerService.findAll({offset, limit});
+      const result = await offerService.findAll({offset, limit});
 
-      res.status(HttpStatusCode.OK).json(offers);
+      res.status(HttpStatusCode.OK).json(result);
     } catch (error) {
       next(error);
     }

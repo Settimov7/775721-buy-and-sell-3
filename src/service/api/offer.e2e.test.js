@@ -84,6 +84,12 @@ describe(`Offer API end-points`, () => {
       expect(res.statusCode).toBe(200);
     });
 
+    it(`should return correct quantity of offers`, async () => {
+      const res = await request(server).get(`/api/offers`);
+
+      expect(res.body.quantity).toEqual(offers.length);
+    });
+
     it(`should return correct offers if request was successful`, async () => {
       const expectedOffers = [
         {
@@ -108,7 +114,7 @@ describe(`Offer API end-points`, () => {
 
       const res = await request(server).get(`/api/offers`);
 
-      expect(res.body).toEqual(expectedOffers);
+      expect(res.body.offers).toEqual(expectedOffers);
     });
 
     it(`with offset = 1 should return offers without first offer`, async () => {
@@ -189,7 +195,7 @@ describe(`Offer API end-points`, () => {
 
       const res = await request(server).get(`/api/offers?offset=${ offset }`);
 
-      expect(res.body).toEqual(expectedOffers);
+      expect(res.body.offers).toEqual(expectedOffers);
     });
 
     it(`with limit = 1 should return first offer`, async () => {
@@ -247,7 +253,7 @@ describe(`Offer API end-points`, () => {
 
       const res = await request(server).get(`/api/offers?limit=${ limit }`);
 
-      expect(res.body).toEqual(expectedOffers);
+      expect(res.body.offers).toEqual(expectedOffers);
     });
 
     it(`with offset = 1 and limit = 1 should return offer with id = 2`, async () => {
@@ -320,7 +326,7 @@ describe(`Offer API end-points`, () => {
 
       const res = await request(server).get(`/api/offers?offset=${ offset }&limit=${ limit }`);
 
-      expect(res.body).toEqual(expectedOffers);
+      expect(res.body.offers).toEqual(expectedOffers);
     });
   });
 
@@ -429,7 +435,7 @@ describe(`Offer API end-points`, () => {
       const {body: newOffer} = await request(server).post(`/api/offers`).send(data);
       const res = await request(server).get(`/api/offers`);
 
-      expect(res.body).toContainEqual(newOffer);
+      expect(res.body.offers).toContainEqual(newOffer);
     });
   });
 
