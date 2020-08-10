@@ -1,0 +1,4 @@
+'use strict';
+
+exports.OFFERS_LIMIT_QUANTITY_ON_PAGE = 8;
+exports.OFFERS_PAGES_MAX_QUANTITY = 5;

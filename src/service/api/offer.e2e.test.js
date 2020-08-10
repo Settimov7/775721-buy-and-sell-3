@@ -50,6 +50,7 @@ describe(`Offer API end-points`, () => {
         type: `buy`,
         description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
         user_id: 1, /* eslint-disable-line */
+        createdAt: `2020-02-15`,/* eslint-disable-line */
       },
       {
         id: 2,
@@ -59,6 +60,7 @@ describe(`Offer API end-points`, () => {
         type: `sell`,
         description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
         user_id: 1, /* eslint-disable-line */
+        createdAt: `2020-02-25`, /* eslint-disable-line */
       },
     ];
     const offersCategories = [
@@ -82,8 +84,13 @@ describe(`Offer API end-points`, () => {
       expect(res.statusCode).toBe(200);
     });
 
-    it(`should return correct offers if request was successful`, async () => {
+    it(`should return correct quantity of offers`, async () => {
       const res = await request(server).get(`/api/offers`);
+
+      expect(res.body.quantity).toEqual(offers.length);
+    });
+
+    it(`should return correct offers if request was successful`, async () => {
       const expectedOffers = [
         {
           id: 2,
@@ -105,7 +112,221 @@ describe(`Offer API end-points`, () => {
         },
       ];
 
-      expect(res.body).toEqual(expectedOffers);
+      const res = await request(server).get(`/api/offers`);
+
+      expect(res.body.offers).toEqual(expectedOffers);
+    });
+
+    it(`with offset = 1 should return offers without first offer`, async () => {
+      const offset = 1;
+      const offersForTestOffset = [
+        {
+          id: 1,
+          title: `Куплю новую приставку Xbox`,
+          image: `item01.jpg`,
+          sum: 67782.42,
+          type: `buy`,
+          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
+          user_id: 1, /* eslint-disable-line */
+          createdAt: `2020-02-15`, /* eslint-disable-line */
+        },
+        {
+          id: 2,
+          title: `Продам породистого кота`,
+          image: `item02.jpg`,
+          sum: 557460.7,
+          type: `sell`,
+          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
+          user_id: 1, /* eslint-disable-line */
+          createdAt: `2020-02-10`, /* eslint-disable-line */
+        },
+        {
+          id: 3,
+          title: `Отдам в хорошие руки подшивку «Мурзилка»`,
+          image: `item03.jpg`,
+          sum: 12331.2,
+          type: `buy`,
+          description: `Бонусом отдам все аксессуары. Это настоящая находка для коллекционера!`,
+          user_id: 1, /* eslint-disable-line */
+          createdAt: `2020-02-05`, /* eslint-disable-line */
+        },
+      ];
+      const offersCategoriesForTestOffset = [
+        {
+          offerId: 1,
+          categoriesIds: [1],
+        },
+        {
+          offerId: 2,
+          categoriesIds: [2],
+        },
+        {
+          offerId: 3,
+          categoriesIds: [3],
+        },
+      ];
+      const expectedOffers = [
+        {
+          id: 2,
+          title: `Продам породистого кота`,
+          picture: `item02.jpg`,
+          sum: `557460.70`,
+          type: `sell`,
+          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
+          category: [`Разное`],
+        },
+        {
+          id: 3,
+          title: `Отдам в хорошие руки подшивку «Мурзилка»`,
+          picture: `item03.jpg`,
+          sum: `12331.20`,
+          type: `buy`,
+          description: `Бонусом отдам все аксессуары. Это настоящая находка для коллекционера!`,
+          category: [`Животные`],
+        },
+      ];
+
+      await testDataBase.resetDataBase({
+        users,
+        categories,
+        offers: offersForTestOffset,
+        offersCategories: offersCategoriesForTestOffset,
+      });
+
+      const res = await request(server).get(`/api/offers?offset=${ offset }`);
+
+      expect(res.body.offers).toEqual(expectedOffers);
+    });
+
+    it(`with limit = 1 should return first offer`, async () => {
+      const limit = 1;
+      const offersForTestLimit = [
+        {
+          id: 1,
+          title: `Куплю новую приставку Xbox`,
+          image: `item01.jpg`,
+          sum: 67782.42,
+          type: `buy`,
+          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
+          user_id: 1, /* eslint-disable-line */
+          createdAt: `2020-02-15`, /* eslint-disable-line */
+        },
+        {
+          id: 2,
+          title: `Отдам в хорошие руки подшивку «Мурзилка»`,
+          image: `item03.jpg`,
+          sum: 12331.2,
+          type: `buy`,
+          description: `Бонусом отдам все аксессуары. Это настоящая находка для коллекционера!`,
+          user_id: 1, /* eslint-disable-line */
+          createdAt: `2020-02-05`, /* eslint-disable-line */
+        },
+      ];
+      const offersCategoriesForTestLimit = [
+        {
+          offerId: 1,
+          categoriesIds: [1],
+        },
+        {
+          offerId: 2,
+          categoriesIds: [2],
+        },
+      ];
+      const expectedOffers = [
+        {
+          id: 1,
+          title: `Куплю новую приставку Xbox`,
+          picture: `item01.jpg`,
+          sum: `67782.42`,
+          type: `buy`,
+          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
+          category: [`Игры`],
+        },
+      ];
+
+      await testDataBase.resetDataBase({
+        users,
+        categories,
+        offers: offersForTestLimit,
+        offersCategories: offersCategoriesForTestLimit,
+      });
+
+      const res = await request(server).get(`/api/offers?limit=${ limit }`);
+
+      expect(res.body.offers).toEqual(expectedOffers);
+    });
+
+    it(`with offset = 1 and limit = 1 should return offer with id = 2`, async () => {
+      const offset = 1;
+      const limit = 1;
+      const offersForTestOffsetAndLimit = [
+        {
+          id: 1,
+          title: `Куплю новую приставку Xbox`,
+          image: `item01.jpg`,
+          sum: 67782.42,
+          type: `buy`,
+          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
+          user_id: 1, /* eslint-disable-line */
+          createdAt: `2020-02-15`, /* eslint-disable-line */
+        },
+        {
+          id: 2,
+          title: `Отдам в хорошие руки подшивку «Мурзилка»`,
+          image: `item02.jpg`,
+          sum: 12331.2,
+          type: `buy`,
+          description: `Бонусом отдам все аксессуары. Это настоящая находка для коллекционера!`,
+          user_id: 1, /* eslint-disable-line */
+          createdAt: `2020-02-10`, /* eslint-disable-line */
+        },
+        {
+          id: 3,
+          title: `Продам породистого кота`,
+          image: `item03.jpg`,
+          sum: 557460.7,
+          type: `sell`,
+          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
+          user_id: 1, /* eslint-disable-line */
+          createdAt: `2020-02-05`, /* eslint-disable-line */
+        },
+      ];
+      const offersCategoriesForTestOffsetAndLimit = [
+        {
+          offerId: 1,
+          categoriesIds: [1],
+        },
+        {
+          offerId: 2,
+          categoriesIds: [2],
+        },
+        {
+          offerId: 3,
+          categoriesIds: [3],
+        },
+      ];
+      const expectedOffers = [
+        {
+          id: 2,
+          title: `Отдам в хорошие руки подшивку «Мурзилка»`,
+          picture: `item02.jpg`,
+          sum: `12331.20`,
+          type: `buy`,
+          description: `Бонусом отдам все аксессуары. Это настоящая находка для коллекционера!`,
+          category: [`Разное`],
+        },
+      ];
+
+      await testDataBase.resetDataBase({
+        users,
+        categories,
+        offers: offersForTestOffsetAndLimit,
+        offersCategories: offersCategoriesForTestOffsetAndLimit,
+      });
+
+      const res = await request(server).get(`/api/offers?offset=${ offset }&limit=${ limit }`);
+
+      expect(res.body.offers).toEqual(expectedOffers);
     });
   });
 
@@ -214,7 +435,7 @@ describe(`Offer API end-points`, () => {
       const {body: newOffer} = await request(server).post(`/api/offers`).send(data);
       const res = await request(server).get(`/api/offers`);
 
-      expect(res.body).toContainEqual(newOffer);
+      expect(res.body.offers).toContainEqual(newOffer);
     });
   });
 
