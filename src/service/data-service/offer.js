@@ -37,13 +37,15 @@ class OfferService {
     const {Offer} = this._models;
 
     try {
-      const quantity = await Offer.count();
-      const offers = await Offer.findAll({
-        ...this._selectOptions,
-        offset,
-        limit,
-        subQuery: false,
-      });
+      const [quantity, offers] = await Promise.all([
+        Offer.count(),
+        Offer.findAll({
+          ...this._selectOptions,
+          offset,
+          limit,
+          subQuery: false,
+        }),
+      ]);
 
       return {
         offers,
