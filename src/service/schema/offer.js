@@ -2,7 +2,11 @@
 
 const Joi = require(`joi`);
 
-exports.offerSchema = Joi.object({
+exports.offerParamsSchema = Joi.object({
+  offerId: Joi.number(),
+});
+
+exports.offerDataSchema = Joi.object({
   title: Joi.string()
   .min(10)
   .max(100)

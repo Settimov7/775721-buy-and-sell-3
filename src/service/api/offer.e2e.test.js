@@ -706,8 +706,14 @@ describe(`Offer API end-points`, () => {
       expect(res.statusCode).toBe(404);
     });
 
+    it(`should return status 400 if have sent invalid offerId`, async () => {
+      const res = await request(server).get(`/api/offers/abc`);
+
+      expect(res.statusCode).toBe(400);
+    });
+
     it(`should return status 200 if offer exists`, async () => {
-      const res = await request(server).get(`/api/offers/2 }`);
+      const res = await request(server).get(`/api/offers/2`);
 
       expect(res.statusCode).toBe(200);
     });
@@ -775,9 +781,9 @@ describe(`Offer API end-points`, () => {
 
     it(`should return status 404 if offer doesn't exist`, async () => {
       const data = {
-        title: `Заголовок`,
+        title: `Заголовок предложения`,
         category: [2],
-        description: `Описание`,
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
         picture: `/picture.jpg`,
         type: `sell`,
         sum: 12345.67,
@@ -785,6 +791,20 @@ describe(`Offer API end-points`, () => {
       const res = await request(server).put(`/api/offers/1234`).send(data);
 
       expect(res.statusCode).toBe(404);
+    });
+
+    it(`should return status 400 if have sent invalid offerId`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [2],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: 12345.67,
+      };
+      const res = await request(server).put(`/api/offers/abc`).send(data);
+
+      expect(res.statusCode).toBe(400);
     });
 
     it(`should return status 400 if didn't send title`, async () => {
