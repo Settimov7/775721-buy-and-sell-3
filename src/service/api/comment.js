@@ -4,17 +4,16 @@ const {Router} = require(`express`);
 
 const {HttpStatusCode} = require(`../../constants`);
 const {isRequestDataValid} = require(`../middlewares/is-request-data-valid`);
+const {commentSchema} = require(`../schema/comment`);
 
 const Route = {
   INDEX: `/`,
   COMMENT: `/:commentId`,
 };
 
-const EXPECTED_PROPERTIES = [`text`];
-
 const createCommentRouter = ({commentService, logger}) => {
   const router = new Router({mergeParams: true});
-  const isRequestDataValidMiddleware = isRequestDataValid({expectedProperties: EXPECTED_PROPERTIES, logger});
+  const isRequestDataValidMiddleware = isRequestDataValid({schema: commentSchema, logger});
 
   router.get(Route.INDEX, async (req, res, next) => {
     const {offerId} = req.params;

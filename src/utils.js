@@ -23,12 +23,6 @@ exports.shuffle = (someArray) => {
 
 exports.printNumWithLead0 = (number) => (number < 10) ? `0${ number }` : number;
 
-exports.hasAllExpectedProperties = (object, expectedProperties) => {
-  const objectProperties = Object.keys(object);
-
-  return expectedProperties.every((expectedProperty) => objectProperties.includes(expectedProperty));
-};
-
 exports.readContent = async (filePath) => {
   let result = [];
 

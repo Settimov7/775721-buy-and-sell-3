@@ -113,11 +113,20 @@ describe(`Comment API end-points`, () => {
 
     it(`should return status 404 if offer doesn't exist`, async () => {
       const data = {
-        text: `New comment`,
+        text: `Lorem ipsum dolor sit amet, consectetur adipisicing elit.`,
       };
       const res = await request(server).post(`/api/offers/1234/comments`).send(data);
 
       expect(res.statusCode).toBe(404);
+    });
+
+    it(`should return status 400 if have sent text shorter than 20 letters`, async () => {
+      const data = {
+        text: `Lorem`,
+      };
+      const res = await request(server).post(`/api/offers/1/comments`).send(data);
+
+      expect(res.statusCode).toBe(400);
     });
 
     it(`should return status 400 if didnt send text`, async () => {
@@ -131,7 +140,7 @@ describe(`Comment API end-points`, () => {
 
     it(`should return status 201 if new comment was created`, async () => {
       const data = {
-        text: `New comment`,
+        text: `Lorem ipsum dolor sit amet, consectetur adipisicing elit.`,
       };
       const res = await request(server).post(`/api/offers/1/comments`).send(data);
 
@@ -140,10 +149,10 @@ describe(`Comment API end-points`, () => {
 
     it(`should return new comment if new comment was created`, async () => {
       const data = {
-        text: `New comment`,
+        text: `Lorem ipsum dolor sit amet, consectetur adipisicing elit.`,
       };
       const expectedComment = {
-        message: `New comment`,
+        message: `Lorem ipsum dolor sit amet, consectetur adipisicing elit.`,
       };
 
       const res = await request(server).post(`/api/offers/1/comments`).send(data);
@@ -154,7 +163,7 @@ describe(`Comment API end-points`, () => {
 
     it(`should return comments with new comment if new comment was created`, async () => {
       const data = {
-        text: `New comment`,
+        text: `Lorem ipsum dolor sit amet, consectetur adipisicing elit.`,
       };
       const {body: newComment} = await request(server).post(`/api/offers/1/comments`).send(data);
       const res = await request(server).get(`/api/offers/1/comments`);

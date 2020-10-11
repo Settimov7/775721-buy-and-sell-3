@@ -5,6 +5,7 @@ const {Router} = require(`express`);
 const {HttpStatusCode} = require(`../../constants`);
 const {isOfferExists} = require(`../middlewares/is-offer-exists`);
 const {isRequestDataValid} = require(`../middlewares/is-request-data-valid`);
+const {offerSchema} = require(`../schema/offer`);
 
 const Route = {
   INDEX: `/`,
@@ -12,11 +13,9 @@ const Route = {
   COMMENTS: `/:offerId/comments`,
 };
 
-const EXPECTED_PROPERTIES = [`category`, `description`, `title`, `type`, `sum`];
-
 const createOfferRouter = ({offerService, commentRouter, logger}) => {
   const router = new Router();
-  const isRequestDataValidMiddleware = isRequestDataValid({expectedProperties: EXPECTED_PROPERTIES, logger});
+  const isRequestDataValidMiddleware = isRequestDataValid({schema: offerSchema, logger});
   const isOfferExistsMiddleware = isOfferExists({service: offerService, logger});
 
   router.get(Route.INDEX, async (req, res, next) => {
