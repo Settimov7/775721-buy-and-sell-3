@@ -82,7 +82,7 @@ const createOfferRouter = ({offerService, commentRouter, logger}) => {
     }
   });
 
-  router.use(Route.COMMENTS, isOfferExistsMiddleware, commentRouter);
+  router.use(Route.COMMENTS, [isRequestParamsMiddleware, isOfferExistsMiddleware], commentRouter);
 
   return router;
 };

@@ -4,7 +4,8 @@ const {Router} = require(`express`);
 
 const {HttpStatusCode} = require(`../../constants`);
 const {isRequestDataValid} = require(`../middlewares/is-request-data-valid`);
-const {commentSchema} = require(`../schema/comment`);
+const {isRequestParamsValid} = require(`../middlewares/is-request-params-valid`);
+const {commentDataSchema, commentParamsSchema} = require(`../schema/comment`);
 
 const Route = {
   INDEX: `/`,
@@ -13,7 +14,8 @@ const Route = {
 
 const createCommentRouter = ({commentService, logger}) => {
   const router = new Router({mergeParams: true});
-  const isRequestDataValidMiddleware = isRequestDataValid({schema: commentSchema, logger});
+  const isRequestParamsValidMiddleware = isRequestParamsValid({schema: commentParamsSchema, logger});
+  const isRequestDataValidMiddleware = isRequestDataValid({schema: commentDataSchema, logger});
 
   router.get(Route.INDEX, async (req, res, next) => {
     const {offerId} = req.params;
@@ -40,7 +42,7 @@ const createCommentRouter = ({commentService, logger}) => {
     }
   });
 
-  router.delete(Route.COMMENT, async (req, res, next) => {
+  router.delete(Route.COMMENT, isRequestParamsValidMiddleware, async (req, res, next) => {
     const {commentId} = req.params;
 
     try {

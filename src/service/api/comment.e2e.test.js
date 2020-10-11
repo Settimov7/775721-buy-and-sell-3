@@ -204,6 +204,12 @@ describe(`Comment API end-points`, () => {
       expect(res.statusCode).toBe(404);
     });
 
+    it(`should return status 400 if have sent invalid commentId`, async () => {
+      const res = await request(server).delete(`/api/offers/1/comments/abc`);
+
+      expect(res.statusCode).toBe(400);
+    });
+
     it(`should return status 200 if comment was deleted`, async () => {
       const res = await request(server).delete(`/api/offers/1/comments/2`);
 
