@@ -20,7 +20,8 @@ exports.offerDataSchema = Joi.object({
   .max(1000)
   .required(),
   picture: Joi.string()
-  .pattern(/\w\.(jpg|png)/),
+  .pattern(/\w\.(jpg|png)/)
+  .allow(''),
   type: Joi.string()
   .valid(`buy`, `sell`)
   .required(),

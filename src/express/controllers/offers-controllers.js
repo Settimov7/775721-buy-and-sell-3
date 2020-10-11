@@ -33,11 +33,13 @@ exports.postAddPost = async (req, res, next) => {
       sum,
     };
 
-    const {statusCode} = await request.post({url: `${ API_URL }/offers`, json: true, body: offer});
+    const {statusCode, body} = await request.post({url: `${ API_URL }/offers`, json: true, body: offer});
 
     if (statusCode === HttpStatusCode.CREATED) {
       return res.redirect(`/my`);
     }
+
+    const validationErrors = body.details.map(({ message }) => message);
 
     const categoriesResult = await request.get({url: `${ API_URL }/categories`, json: true});
 
@@ -49,6 +51,7 @@ exports.postAddPost = async (req, res, next) => {
       categories: categoriesResult.body,
       action: `http://localhost:8080/offers/add`,
       offer,
+      errors: validationErrors,
     });
   } catch (error) {
     return next(error);

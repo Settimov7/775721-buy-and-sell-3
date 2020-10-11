@@ -8,7 +8,7 @@ const isRequestDataValid = ({schema, logger}) => async (req, res, next) => {
   try {
     await schema.validateAsync(body, {abortEarly: false});
   } catch (error) {
-    res.status(HttpStatusCode.BAD_REQUEST).send(`Invalid data`);
+    res.status(HttpStatusCode.BAD_REQUEST).json(error);
 
     return logger.error(`Invalid data. Data: ${ body }. Error: ${ error }`);
   }
