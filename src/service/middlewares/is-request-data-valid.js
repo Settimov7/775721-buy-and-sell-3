@@ -1,15 +1,16 @@
 'use strict';
 
 const {HttpStatusCode} = require(`../../constants`);
-const {hasAllExpectedProperties} = require(`../../utils`);
 
-const isRequestDataValid = ({expectedProperties, logger}) => (req, res, next) => {
-  const hasNotAllProperties = !hasAllExpectedProperties(req.body, expectedProperties);
+const isRequestDataValid = ({schema, logger}) => async (req, res, next) => {
+  const {body} = req;
 
-  if (hasNotAllProperties) {
-    res.status(HttpStatusCode.BAD_REQUEST).send(`Invalid data`);
+  try {
+    await schema.validateAsync(body, {abortEarly: false});
+  } catch (error) {
+    res.status(HttpStatusCode.BAD_REQUEST).json(error);
 
-    return logger.error(`Expected next properties: ${ expectedProperties }, but received: ${ Object.keys(req.body) }. End request with error: ${ res.statusCode }`);
+    return logger.error(`Invalid data. Data: ${ body }. Error: ${ error }`);
   }
 
   return next();

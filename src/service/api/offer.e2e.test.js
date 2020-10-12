@@ -353,9 +353,98 @@ describe(`Offer API end-points`, () => {
       await testDataBase.resetDataBase({users, categories});
     });
 
-    it(`should return status 400 if didn't send category`, async () => {
+    it(`should return status 400 if have sent title shorter than 10 letters`, async () => {
       const data = {
-        title: `Заголовок`,
+        title: `Title`,
+        category: [1],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: 1234,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if have sent title longer than 100 letters`, async () => {
+      const data = {
+        title: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        category: [1],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: 1234,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if have not sent title`, async () => {
+      const data = {
+        category: [1],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: 1234,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if category items not string or number`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [{}],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: 1234,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if have sent empty categories`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: 1234,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if have not sent categories`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: 1234,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if have sent description shorter than 50 letters`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [1],
         description: `Описание`,
         picture: `/picture.jpg`,
         type: `sell`,
@@ -367,11 +456,23 @@ describe(`Offer API end-points`, () => {
       expect(res.statusCode).toBe(400);
     });
 
-    it(`should return status 201 if sent valid data`, async () => {
+    it(`should return status 400 if have sent description longer than 1000 letters`, async () => {
       const data = {
-        title: `Заголовок`,
+        title: `Заголовок предложения`,
         category: [1],
-        description: `Описание`,
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio,
+            dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui,
+            quia quo sint ullam ut. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+            Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus
+            nemo non quae qui, quia quo sint ullam ut. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias
+            consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo
+            non quae qui, quia quo sint ullam ut. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+            Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus
+            necessitatibus nemo non quae qui, quia quo sint ullam ut. Lorem ipsum dolor sit amet,
+            consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam
+            magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias
+            consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo
+            non quae qui, quia quo sint ullam ut.`,
         picture: `/picture.jpg`,
         type: `sell`,
         sum: 1234,
@@ -379,24 +480,142 @@ describe(`Offer API end-points`, () => {
 
       const res = await request(server).post(`/api/offers`).send(data);
 
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if have not sent description`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [1],
+        picture: `/picture.png`,
+        type: `sell`,
+        sum: 1234,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if have sent not jpg or png picture`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [1],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.gif`,
+        type: `sell`,
+        sum: 1234,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if have sent not "sell" or "buy" type`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [1],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `abc`,
+        sum: 1234,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if have not sent type`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [1],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        sum: 1234,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if have sent sum smaller than 100`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [1],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: 99,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if have not sent sum`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [1],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if have sent data with extra property`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [1],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: 1234,
+        token: `token`,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 201 if have sent valid data`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [1],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: `1234`,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
       expect(res.statusCode).toBe(201);
     });
 
-    it(`should return offer with id and sent title if sent valid data`, async () => {
+    it(`should return offer with id and sent title if have sent valid data`, async () => {
       const data = {
-        title: `Заголовок`,
+        title: `Заголовок предложения`,
         category: [1],
-        description: `Описание`,
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
         picture: `/picture.jpg`,
         type: `sell`,
         sum: 1234,
       };
       const expectedOffer = {
-        title: `Заголовок`,
+        title: `Заголовок предложения`,
         picture: `/picture.jpg`,
         sum: `1234.00`,
         type: `sell`,
-        description: `Описание`,
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
         category: [`Игры`],
       };
 
@@ -406,27 +625,11 @@ describe(`Offer API end-points`, () => {
       expect(res.body).toMatchObject(expectedOffer);
     });
 
-    it(`should return offer without extra properties if sent data with extra property`, async () => {
-      const data = {
-        title: `Заголовок`,
-        category: [1],
-        description: `Описание`,
-        picture: `/picture.jpg`,
-        type: `sell`,
-        sum: 1234,
-        token: `token`,
-      };
-
-      const res = await request(server).post(`/api/offers`).send(data);
-
-      expect(res.body).not.toHaveProperty(`token`);
-    });
-
     it(`should return offers with new offer`, async () => {
       const data = {
-        title: `Заголовок`,
+        title: `Заголовок предложения`,
         category: [1],
-        description: `Описание`,
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
         picture: `/picture.jpg`,
         type: `sell`,
         sum: 1234,
@@ -503,8 +706,14 @@ describe(`Offer API end-points`, () => {
       expect(res.statusCode).toBe(404);
     });
 
+    it(`should return status 400 if have sent invalid offerId`, async () => {
+      const res = await request(server).get(`/api/offers/abc`);
+
+      expect(res.statusCode).toBe(400);
+    });
+
     it(`should return status 200 if offer exists`, async () => {
-      const res = await request(server).get(`/api/offers/2 }`);
+      const res = await request(server).get(`/api/offers/2`);
 
       expect(res.statusCode).toBe(200);
     });
@@ -572,9 +781,9 @@ describe(`Offer API end-points`, () => {
 
     it(`should return status 404 if offer doesn't exist`, async () => {
       const data = {
-        title: `Заголовок`,
+        title: `Заголовок предложения`,
         category: [2],
-        description: `Описание`,
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
         picture: `/picture.jpg`,
         type: `sell`,
         sum: 12345.67,
@@ -582,6 +791,20 @@ describe(`Offer API end-points`, () => {
       const res = await request(server).put(`/api/offers/1234`).send(data);
 
       expect(res.statusCode).toBe(404);
+    });
+
+    it(`should return status 400 if have sent invalid offerId`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [2],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: 12345.67,
+      };
+      const res = await request(server).put(`/api/offers/abc`).send(data);
+
+      expect(res.statusCode).toBe(400);
     });
 
     it(`should return status 400 if didn't send title`, async () => {
@@ -599,9 +822,9 @@ describe(`Offer API end-points`, () => {
 
     it(`should return status 200 if offer was updated`, async () => {
       const data = {
-        title: `Заголовок`,
+        title: `Заголовок предложения`,
         category: [2],
-        description: `Описание`,
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
         picture: `/picture.jpg`,
         type: `sell`,
         sum: 12345.67,
@@ -613,20 +836,20 @@ describe(`Offer API end-points`, () => {
 
     it(`should return offer with updated title if offer was updated`, async () => {
       const data = {
-        title: `Заголовок`,
+        title: `Заголовок предложения`,
         category: [2],
-        description: `Описание`,
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
         picture: `/picture.jpg`,
         type: `sell`,
         sum: 12345.67,
       };
       const expectedOffer = {
         id: 1,
-        title: `Заголовок`,
+        title: `Заголовок предложения`,
         picture: `/picture.jpg`,
         sum: `12345.67`,
         type: `sell`,
-        description: `Описание`,
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
         category: [`Разное`],
       };
 

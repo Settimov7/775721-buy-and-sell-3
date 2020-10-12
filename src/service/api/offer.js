@@ -4,7 +4,9 @@ const {Router} = require(`express`);
 
 const {HttpStatusCode} = require(`../../constants`);
 const {isOfferExists} = require(`../middlewares/is-offer-exists`);
+const {isRequestParamsValid} = require(`../middlewares/is-request-params-valid`);
 const {isRequestDataValid} = require(`../middlewares/is-request-data-valid`);
+const {offerDataSchema, offerParamsSchema} = require(`../schema/offer`);
 
 const Route = {
   INDEX: `/`,
@@ -12,11 +14,11 @@ const Route = {
   COMMENTS: `/:offerId/comments`,
 };
 
-const EXPECTED_PROPERTIES = [`category`, `description`, `title`, `type`, `sum`];
-
 const createOfferRouter = ({offerService, commentRouter, logger}) => {
   const router = new Router();
-  const isRequestDataValidMiddleware = isRequestDataValid({expectedProperties: EXPECTED_PROPERTIES, logger});
+
+  const isRequestParamsMiddleware = isRequestParamsValid({schema: offerParamsSchema, logger});
+  const isRequestDataValidMiddleware = isRequestDataValid({schema: offerDataSchema, logger});
   const isOfferExistsMiddleware = isOfferExists({service: offerService, logger});
 
   router.get(Route.INDEX, async (req, res, next) => {
@@ -43,7 +45,7 @@ const createOfferRouter = ({offerService, commentRouter, logger}) => {
     }
   });
 
-  router.get(Route.OFFER, isOfferExistsMiddleware, async (req, res, next) => {
+  router.get(Route.OFFER, [isRequestParamsMiddleware, isOfferExistsMiddleware], async (req, res, next) => {
     const {offerId} = req.params;
 
     try {
@@ -55,7 +57,7 @@ const createOfferRouter = ({offerService, commentRouter, logger}) => {
     }
   });
 
-  router.put(Route.OFFER, [isOfferExistsMiddleware, isRequestDataValidMiddleware], async (req, res, next) => {
+  router.put(Route.OFFER, [isRequestParamsMiddleware, isOfferExistsMiddleware, isRequestDataValidMiddleware], async (req, res, next) => {
     const {offerId} = req.params;
     const {category, description, picture, title, type, sum} = req.body;
 
@@ -68,7 +70,7 @@ const createOfferRouter = ({offerService, commentRouter, logger}) => {
     }
   });
 
-  router.delete(Route.OFFER, isOfferExistsMiddleware, async (req, res, next) => {
+  router.delete(Route.OFFER, [isRequestParamsMiddleware, isOfferExistsMiddleware], async (req, res, next) => {
     const {offerId} = req.params;
 
     try {
@@ -80,7 +82,7 @@ const createOfferRouter = ({offerService, commentRouter, logger}) => {
     }
   });
 
-  router.use(Route.COMMENTS, isOfferExistsMiddleware, commentRouter);
+  router.use(Route.COMMENTS, [isRequestParamsMiddleware, isOfferExistsMiddleware], commentRouter);
 
   return router;
 };
