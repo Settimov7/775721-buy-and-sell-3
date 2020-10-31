@@ -75,7 +75,7 @@ exports.postRegister = async (req, res, next) => {
       return messages;
     }, {});
 
-    return res.render(`main/sign-up`, { user: userData, errors: errorMessages });
+    return res.render(`main/sign-up`, {user: userData, errors: errorMessages});
   } catch (error) {
     return next(error);
   }
