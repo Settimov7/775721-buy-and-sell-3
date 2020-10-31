@@ -39,7 +39,7 @@ exports.postAddPost = async (req, res, next) => {
       return res.redirect(`/my`);
     }
 
-    const validationErrors = body.details.map(({ message }) => message);
+    const validationErrors = body.details.map(({message}) => message);
 
     const categoriesResult = await request.get({url: `${ API_URL }/categories`, json: true});
 

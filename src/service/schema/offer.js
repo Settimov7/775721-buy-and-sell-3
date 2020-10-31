@@ -21,7 +21,7 @@ exports.offerDataSchema = Joi.object({
   .required(),
   picture: Joi.string()
   .pattern(/\w\.(jpg|png)/)
-  .allow(''),
+  .allow(``),
   type: Joi.string()
   .valid(`buy`, `sell`)
   .required(),
