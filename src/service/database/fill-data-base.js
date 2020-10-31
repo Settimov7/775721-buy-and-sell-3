@@ -1,6 +1,6 @@
 'use strict';
 
-exports.fillDataBase = async ({dataBase, mocks}) => {
+exports.fillDataBase = async ({dataBase, mocks = {}}) => {
   const {sequelize, models} = dataBase;
   const {User, Category, Offer, Comment} = models;
   const {users = [], categories = [], offers = [], comments = [], offersCategories = []} = mocks;
