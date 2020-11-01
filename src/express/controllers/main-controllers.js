@@ -53,7 +53,7 @@ exports.postRegister = async (req, res, next) => {
     const {statusCode, body} = await request.post({url: `${ API_URL }/user`, json: true, body: userData});
 
     if (statusCode === HttpStatusCode.CREATED) {
-      return res.redirect(`/login`);
+      return res.redirect(HttpStatusCode.SEE_OTHER, `/login`);
     }
 
     const errorMessages = body.details.reduce((messages, {path, message}) => {
