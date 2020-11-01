@@ -9,7 +9,8 @@
     "eslint": "eslint --ext .js src/",
     "start::debug": "cross-env LOG_LEVEL=debug nodemon ./src/service/service.js --server 3000 | pino-pretty",
     "start": "cross-env LOG_LEVEL=error nodemon ./src/service/service.js --server 3000 > src/service/logs",
-    "start-front-server": "nodemon ./src/express/index.js"
+    "start-front-server": "nodemon ./src/express/index.js",
+    "fill-db": "node ./src/service/service.js --fill-db 15"
   },
   "repository": {
     "type": "git",
