@@ -3,7 +3,7 @@ extends ../layout
 block content
   main.page-content
     section.sign-up
-      form.sign-up__form.form(action='#', method='post', enctype='multipart/form-data', autocomplete='off')
+      form.sign-up__form.form(action='/register', method='post', enctype='multipart/form-data', autocomplete='off')
         .sign-up__title
           h2 Регистрация
           a.sign-up__link(href='/login') Вход
@@ -14,21 +14,26 @@ block content
             label(for='avatar')
               span.sign-up__text-upload Загрузить аватар…
               span.sign-up__text-another Загрузить другой аватар…
+            p(style='color: red') #{errors ? errors['avatar'] : ''}
         .form__field.sign-up__field
-          input#user-name.js-field(type='text', name='user-name', required)
+          input#user-name.js-field(type='text', name='name', value=(user && user.name || ''), required)
           label(for='user-name') Имя и фамилия
           span Обязательное поле
+        p(style='color: red') #{errors ? errors['name'] : ''}
         .form__field.sign-up__field
-          input#user-email.js-field(type='email', name='user-email', required)
+          input#user-email.js-field(type='email', name='email', value=(user && user.email || ''), required)
           label(for='user-email') Эл. почта
           span Обязательное поле
+        p(style='color: red') #{errors ? errors['email'] : ''}
         .form__field.sign-up__field
-          input#user-password.js-field(type='password', name='user-password', required)
+          input#user-password.js-field(type='password', name='password', required)
           label(for='user-password') Пароль
           span Обязательное поле
+        p(style='color: red') #{errors ? errors['password'] : ''}
         .form__field.sign-up__field
-          input#user-password-again.js-field(type='password', name='user-password-again', required)
+          input#user-password-again.js-field(type='password', name='passwordRepeat', required)
           label(for='user-password-again') Пароль еще раз
           span Обязательное поле
+        p(style='color: red') #{errors ? errors['passwordRepeat'] : ''}
         button.sign-up__button.btn.btn--medium.js-button(type='submit', disabled) Создать аккаунт
 

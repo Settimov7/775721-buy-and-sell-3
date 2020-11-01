@@ -9,7 +9,8 @@
     "eslint": "eslint --ext .js src/",
     "start::debug": "cross-env LOG_LEVEL=debug nodemon ./src/service/service.js --server 3000 | pino-pretty",
     "start": "cross-env LOG_LEVEL=error nodemon ./src/service/service.js --server 3000 > src/service/logs",
-    "start-front-server": "nodemon ./src/express/index.js"
+    "start-front-server": "nodemon ./src/express/index.js",
+    "fill-db": "node ./src/service/service.js --fill-db 15"
   },
   "repository": {
     "type": "git",
@@ -31,9 +32,11 @@
     "supertest": "4.0.2"
   },
   "dependencies": {
+    "bcrypt": "5.0.0",
     "chalk": "4.0.0",
     "cross-env": "7.0.2",
     "express": "4.17.1",
+    "express-formidable": "1.2.0",
     "joi": "17.2.1",
     "nanoid": "3.1.9",
     "pg": "8.3.0",

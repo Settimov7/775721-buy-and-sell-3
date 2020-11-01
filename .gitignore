@@ -13,6 +13,7 @@ node_modules/
 mocks.json
 fill-db.sql
 .env
+tmp
 
 # Папка с собранными файлами проекта
 build/

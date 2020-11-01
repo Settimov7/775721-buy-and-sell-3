@@ -11,14 +11,9 @@ exports.createUserModel = (sequelize, DataTypes) => {
       primaryKey: true,
       allowNull: false,
     },
-    firstName: {
+    name: {
       type: DataTypes.STRING(50), /* eslint-disable-line */
       field: `first_name`,
-      allowNull: false,
-    },
-    lastName: {
-      type: DataTypes.STRING(50), /* eslint-disable-line */
-      field: `last_name`,
       allowNull: false,
     },
     email: {

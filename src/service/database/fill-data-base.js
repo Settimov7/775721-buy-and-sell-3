@@ -1,6 +1,6 @@
 'use strict';
 
-exports.fillDataBase = async ({dataBase, mocks}) => {
+exports.fillDataBase = async ({dataBase, mocks = {}}) => {
   const {sequelize, models} = dataBase;
   const {User, Category, Offer, Comment} = models;
   const {users = [], categories = [], offers = [], comments = [], offersCategories = []} = mocks;
@@ -12,6 +12,9 @@ exports.fillDataBase = async ({dataBase, mocks}) => {
       User.bulkCreate(users),
       Category.bulkCreate(categories),
     ]);
+
+    await sequelize.query(`ALTER SEQUENCE users_id_seq RESTART`);
+    await sequelize.query(`UPDATE users SET id = DEFAULT`);
 
     await Offer.bulkCreate(offers);
     await Comment.bulkCreate(comments);

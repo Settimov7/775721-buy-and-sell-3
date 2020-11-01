@@ -6,6 +6,7 @@ const {createRouter} = require(`../api`);
 const {OfferService} = require(`../data-service/offer`);
 const {CommentService} = require(`../data-service/comment`);
 const {CategoryService} = require(`../data-service/category`);
+const {UserService} = require(`../data-service/user`);
 const {pinoLogger} = require(`../logger`);
 const {HttpStatusCode} = require(`../../constants`);
 
@@ -19,8 +20,9 @@ const createServer = ({dataBase, logger = pinoLogger} = {}) => {
   const offerService = new OfferService(dataBase, logger);
   const commentService = new CommentService(dataBase, logger);
   const categoryService = new CategoryService(dataBase, logger);
+  const userService = new UserService(dataBase, logger);
 
-  const router = createRouter({offerService, commentService, categoryService, logger});
+  const router = createRouter({offerService, commentService, categoryService, userService, logger});
 
   server.use(express.json());
 
