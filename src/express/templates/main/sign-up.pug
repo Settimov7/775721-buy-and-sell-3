@@ -19,8 +19,7 @@ block content
           input#user-name.js-field(type='text', name='name', value=(user && user.name || ''), required)
           label(for='user-name') Имя и фамилия
           span Обязательное поле
-        p(style='color: red') #{errors ? errors['firstName'] : ''}
-        p(style='color: red') #{errors ? errors['lastName'] : ''}
+        p(style='color: red') #{errors ? errors['name'] : ''}
         .form__field.sign-up__field
           input#user-email.js-field(type='email', name='email', value=(user && user.email || ''), required)
           label(for='user-email') Эл. почта

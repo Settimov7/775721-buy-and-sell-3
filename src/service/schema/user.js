@@ -3,12 +3,8 @@
 const Joi = require(`joi`);
 
 exports.userDataSchema = Joi.object({
-  firstName: Joi.string()
-  .pattern(/^[a-zA-Z]+$/)
-  .max(50)
-  .required(),
-  lastName: Joi.string()
-  .pattern(/^[a-zA-Z]+$/)
+  name: Joi.string()
+  .pattern(/^[a-zA-Zа-яА-Я\s]+$/)
   .max(50)
   .required(),
   email: Joi.string()

@@ -95,14 +95,14 @@ exports.createUsers = (count) => Array.from({length: count}, (_, index) => {
   const id = index + 1;
   const firstName = USER_FIRST_NAMES[getRandomInt(0, USER_FIRST_NAMES.length - 1)];
   const lastName = USER_LAST_NAMES[getRandomInt(0, USER_LAST_NAMES.length - 1)];
+  const name = `${ firstName } ${ lastName }`;
   const email = `${ firstName.eng }_${ lastName.eng }_${ id }@mail.local`.toLowerCase();
   const password = getRandomInt(PasswordRestrict.MIN, PasswordRestrict.MAX);
   const avatar = `avatar${ printNumWithLead0(id) }.jpg`;
 
   return {
     id,
-    firstName: firstName.ru,
-    lastName: lastName.ru,
+    name,
     email,
     password,
     avatar,

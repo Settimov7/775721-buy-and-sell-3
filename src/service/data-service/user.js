@@ -13,8 +13,7 @@ class UserService {
       raw: true,
       attributes: [
         `id`,
-        `firstName`,
-        `lastName`,
+        `name`,
         `email`,
         `password`,
         `avatar`,
@@ -22,7 +21,7 @@ class UserService {
     };
   }
 
-  async create({firstName, lastName, email, password, avatar}) {
+  async create({name, email, password, avatar}) {
     const {User} = this._models;
 
     const saltRounds = parseInt(PASSWORD_SALT_ROUNDS, 10);
@@ -32,8 +31,7 @@ class UserService {
       await this._resetIds();
 
       return await User.create({
-        firstName,
-        lastName,
+        name,
         email,
         password: passwordHash,
         avatar,

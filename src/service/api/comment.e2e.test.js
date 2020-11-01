@@ -12,8 +12,7 @@ describe(`Comment API end-points`, () => {
   const users = [
     {
       id: 1,
-      firstName: `Сергей`,
-      lastName: `Иванович`,
+      name: `Сергей Иванович`,
       email: `sergei_ivanovich@mail.local`,
       password: 123456,
       avatar: `avatar01.jpg`,

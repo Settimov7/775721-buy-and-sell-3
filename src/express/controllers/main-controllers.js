@@ -49,19 +49,8 @@ exports.getRegister = async (req, res, next) => {
 exports.postRegister = async (req, res, next) => {
   try {
     const userData = req.fields;
-    const {name, email, password, passwordRepeat, avatar} = userData;
-    const [firstName, lastName] = name.split(` `);
 
-    const userRequestBody = {
-      firstName,
-      lastName,
-      email,
-      password,
-      passwordRepeat,
-      avatar,
-    };
-
-    const {statusCode, body} = await request.post({url: `${ API_URL }/user`, json: true, body: userRequestBody});
+    const {statusCode, body} = await request.post({url: `${ API_URL }/user`, json: true, body: userData});
 
     if (statusCode === HttpStatusCode.CREATED) {
       return res.redirect(`/login`);

@@ -17,8 +17,7 @@ describe(`Offer API end-points`, () => {
     const users = [
       {
         id: 1,
-        firstName: `Иван`,
-        lastName: `Абрамов`,
+        name: `Иван Абрамов`,
         email: `ivan_abramov@mail.local`,
         password: 123456,
         avatar: `avatar01.jpg`,
@@ -334,8 +333,7 @@ describe(`Offer API end-points`, () => {
     const users = [
       {
         id: 1,
-        firstName: `Иван`,
-        lastName: `Абрамов`,
+        name: `Иван Абрамов`,
         email: `ivan_abramov@mail.local`,
         password: 123456,
         avatar: `avatar01.jpg`,
@@ -646,8 +644,7 @@ describe(`Offer API end-points`, () => {
     const users = [
       {
         id: 1,
-        firstName: `Иван`,
-        lastName: `Абрамов`,
+        name: `Иван Абрамов`,
         email: `ivan_abramov@mail.local`,
         password: 123456,
         avatar: `avatar01.jpg`,
@@ -738,8 +735,7 @@ describe(`Offer API end-points`, () => {
     const users = [
       {
         id: 1,
-        firstName: `Иван`,
-        lastName: `Абрамов`,
+        name: `Иван Абрамов`,
         email: `ivan_abramov@mail.local`,
         password: 123456,
         avatar: `avatar01.jpg`,
@@ -863,8 +859,7 @@ describe(`Offer API end-points`, () => {
     const users = [
       {
         id: 1,
-        firstName: `Иван`,
-        lastName: `Абрамов`,
+        name: `Иван Абрамов`,
         email: `ivan_abramov@mail.local`,
         password: 123456,
         avatar: `avatar01.jpg`,

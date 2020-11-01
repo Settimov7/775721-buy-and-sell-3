@@ -18,10 +18,10 @@ const createUserRouter = ({userService, logger}) => {
   const isUserEmailUniqueMiddleware = isUserEmailUnique({service: userService, logger});
 
   router.post(Route.INDEX, [isRequestDataValidMiddleware, isUserEmailUniqueMiddleware], async (req, res, next) => {
-    const {firstName, lastName, email, password, passwordRepeat, avatar} = req.body;
+    const {name, email, password, passwordRepeat, avatar} = req.body;
 
     try {
-      const newUser = await userService.create({firstName, lastName, email, password, passwordRepeat, avatar});
+      const newUser = await userService.create({name, email, password, passwordRepeat, avatar});
 
       res.status(HttpStatusCode.CREATED).json(newUser);
     } catch (error) {

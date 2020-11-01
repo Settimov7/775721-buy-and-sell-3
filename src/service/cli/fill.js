@@ -11,7 +11,7 @@ const {ExitCode} = require(`../../constants`);
 const FILE_NAME = `fill-db.sql`;
 
 const EntityKeyToEntityPropertiesOrder = {
-  users: [`id`, `firstName`, `lastName`, `email`, `password`, `avatar`],
+  users: [`id`, `name`, `email`, `password`, `avatar`],
   offers: [`id`, `title`, `image`, `sum`, `type`, `description`, `created_date`, `user_id`],
   categories: [`id`, `title`, `image`],
   [`offers_categories`]: [`offer_id`, `category_id`],
