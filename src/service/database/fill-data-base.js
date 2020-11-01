@@ -13,6 +13,9 @@ exports.fillDataBase = async ({dataBase, mocks = {}}) => {
       Category.bulkCreate(categories),
     ]);
 
+    await sequelize.query(`ALTER SEQUENCE users_id_seq RESTART`);
+    await sequelize.query(`UPDATE users SET id = DEFAULT`);
+
     await Offer.bulkCreate(offers);
     await Comment.bulkCreate(comments);
 

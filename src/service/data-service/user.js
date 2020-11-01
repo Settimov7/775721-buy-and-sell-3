@@ -28,8 +28,6 @@ class UserService {
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
     try {
-      await this._resetIds();
-
       return await User.create({
         name,
         email,
@@ -62,17 +60,6 @@ class UserService {
 
   async isExist(email) {
     return !!await this.findByEmail(email);
-  }
-
-  async _resetIds() {
-    const {sequelize} = this._dataBase;
-
-    try {
-      await sequelize.query(`ALTER SEQUENCE users_id_seq RESTART`);
-      await sequelize.query(`UPDATE users SET id = DEFAULT`);
-    } catch (error) {
-      this._logger.error(`Can't reset user ids. Error: ${ error }`);
-    }
   }
 }
 
