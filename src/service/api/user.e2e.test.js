@@ -19,7 +19,7 @@ describe(`User API end-points`, () => {
         id: 1,
         name: `Иван Иванович`,
         email: `ivan@mail.com`,
-        password: 123456,
+        password: `123456`,
         avatar: `avatar01.jpg`,
       },
     ];
@@ -228,6 +228,102 @@ describe(`User API end-points`, () => {
       const {body} = await request(server).post(`/api/user`).send(data);
 
       expect(body.password).not.toEqual(data.password);
+    });
+  });
+
+  describe(`POST api/user/login`, () => {
+    const PATH = `/api/user/login`;
+
+    beforeEach(async () => {
+      const userData = {
+        name: `James Bond`,
+        email: `jamesBond@mail.com`,
+        password: `123456`,
+        passwordRepeat: `123456`,
+        avatar: `avatar.png`,
+      };
+
+      await testDataBase.resetDataBase();
+      await request(server).post(`/api/user`).send(userData);
+    });
+
+    it(`should return status 400 if sent invalid email`, async () => {
+      const data = {
+        email: `jamesBond@mail`,
+        password: `123456`,
+      };
+      const res = await request(server).post(PATH).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if didn't send email`, async () => {
+      const data = {
+        password: `123456`,
+      };
+      const res = await request(server).post(PATH).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if password shorter than 6 symbols`, async () => {
+      const data = {
+        email: `jamesBond@mail.com`,
+        password: `123`,
+      };
+      const res = await request(server).post(PATH).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if didn't send password`, async () => {
+      const data = {
+        email: `jamesBond@mail.com`,
+      };
+      const res = await request(server).post(PATH).send(data);
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 403 if didn't find user with email ivan_ivanov@mail.com`, async () => {
+      const data = {
+        email: `ivan_ivanov@mail.com`,
+        password: `123456`,
+      };
+      const res = await request(server).post(PATH).send(data);
+
+      expect(res.statusCode).toBe(403);
+    });
+
+    it(`should return status 403 if sent incorrect password`, async () => {
+      const data = {
+        email: `jamesBond@mail.com`,
+        password: `654321`,
+      };
+      const res = await request(server).post(PATH).send(data);
+
+      expect(res.statusCode).toBe(403);
+    });
+
+    it(`should return status 200 if sent correct data`, async () => {
+      const data = {
+        email: `jamesBond@mail.com`,
+        password: `123456`,
+      };
+      const res = await request(server).post(PATH).send(data);
+
+      expect(res.statusCode).toBe(200);
+    });
+
+    it(`should return access and refresh tokens if sent correct data`, async () => {
+      const data = {
+        email: `jamesBond@mail.com`,
+        password: `123456`,
+      };
+      const {body} = await request(server).post(PATH).send(data);
+
+      expect(body).toHaveProperty(`accessToken`);
+      expect(body).toHaveProperty(`refreshToken`);
     });
   });
 });

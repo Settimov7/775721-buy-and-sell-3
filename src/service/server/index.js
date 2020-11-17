@@ -7,6 +7,7 @@ const {OfferService} = require(`../data-service/offer`);
 const {CommentService} = require(`../data-service/comment`);
 const {CategoryService} = require(`../data-service/category`);
 const {UserService} = require(`../data-service/user`);
+const {RefreshTokenService} = require(`../data-service/refresh-token`);
 const {pinoLogger} = require(`../logger`);
 const {HttpStatusCode} = require(`../../constants`);
 
@@ -21,8 +22,16 @@ const createServer = ({dataBase, logger = pinoLogger} = {}) => {
   const commentService = new CommentService(dataBase, logger);
   const categoryService = new CategoryService(dataBase, logger);
   const userService = new UserService(dataBase, logger);
+  const refreshTokenService = new RefreshTokenService(dataBase, logger);
 
-  const router = createRouter({offerService, commentService, categoryService, userService, logger});
+  const router = createRouter({
+    offerService,
+    commentService,
+    categoryService,
+    userService,
+    refreshTokenService,
+    logger
+  });
 
   server.use(express.json());
 
