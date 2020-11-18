@@ -326,4 +326,58 @@ describe(`User API end-points`, () => {
       expect(body).toHaveProperty(`refreshToken`);
     });
   });
+
+  describe(`Post api/user/refresh`, () => {
+    const PATH = `/api/user/refresh`;
+
+    beforeEach(async () => {
+      const tokens = [
+        {
+          id: 1,
+          value: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjA1NzEzMTc2fQ.hzY0AvYGpeBagHnrECWH46apmpK9p8xJ8cUhFCI3z3Y`,
+        }
+      ];
+
+      await testDataBase.resetDataBase({tokens});
+    });
+
+    it(`should return status 404 if dint found token`, async () => {
+      const token = `abc`;
+      const res = await request(server).post(PATH).send({token});
+
+      expect(res.statusCode).toBe(404);
+    });
+
+    it(`should return status 200 if token was refreshed`, async () => {
+      const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjA1NzEzMTc2fQ.hzY0AvYGpeBagHnrECWH46apmpK9p8xJ8cUhFCI3z3Y`;
+      const res = await request(server).post(PATH).send({token});
+
+      expect(res.statusCode).toBe(200);
+    });
+
+    it(`should return new access and refresh tokens if token was refreshed`, async () => {
+      const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjA1NzEzMTc2fQ.hzY0AvYGpeBagHnrECWH46apmpK9p8xJ8cUhFCI3z3Y`;
+      const {body} = await request(server).post(PATH).send({token});
+
+      expect(body).toHaveProperty(`accessToken`);
+      expect(body).toHaveProperty(`refreshToken`);
+    });
+
+    it(`should return another refresh token if token was refreshed`, async () => {
+      const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjA1NzEzMTc2fQ.hzY0AvYGpeBagHnrECWH46apmpK9p8xJ8cUhFCI3z3Y`;
+      const res = await request(server).post(PATH).send({token});
+
+      expect(res.body.refreshToken).not.toEqual(token);
+    });
+
+    it(`should return status 404 when trying to refresh token with old token`, async () => {
+      const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjA1NzEzMTc2fQ.hzY0AvYGpeBagHnrECWH46apmpK9p8xJ8cUhFCI3z3Y`;
+
+      await request(server).post(PATH).send({token});
+
+      const res = await request(server).post(PATH).send({token});
+
+      expect(res.statusCode).toBe(404);
+    });
+  });
 });

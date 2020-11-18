@@ -1,16 +1,19 @@
 'use strict';
 
 const {Router} = require(`express`);
+const jwt = require(`jsonwebtoken`);
 
 const {isRequestDataValid} = require(`../middlewares/is-request-data-valid`);
 const {isUserEmailUnique} = require(`../middlewares/is-user-email-unique`);
 const {userRegisterDataSchema, userLoginDataSchema} = require(`../schema/user`);
 const {HttpStatusCode} = require(`../../constants`);
+const {JWT_REFRESH_SECRET} = require(`../../config`);
 const {makeTokens} = require(`../jwt/make-tokens`);
 
 const Route = {
   INDEX: `/`,
   LOGIN: `/login`,
+  REFRESH: `/refresh`,
 };
 
 const createUserRouter = ({userService, refreshTokenService, logger}) => {
@@ -81,6 +84,35 @@ const createUserRouter = ({userService, refreshTokenService, logger}) => {
     } catch (error) {
       return next(error);
     }
+  });
+
+  router.post(Route.REFRESH, async (req, res, next) => {
+    const {token} = req.body;
+
+    try {
+      const refreshToken = await refreshTokenService.findByValue(token);
+
+      if (!refreshToken) {
+        return res.sendStatus(HttpStatusCode.NOT_FOUND);
+      }
+
+      jwt.verify(token, JWT_REFRESH_SECRET, async (error, {id}) => {
+        if (error) {
+          return res.sendStatus(HttpStatusCode.FORBIDDEN);
+        }
+
+        const newTokens = makeTokens({id});
+
+        await refreshTokenService.delete(token);
+        await refreshTokenService.add(newTokens.refreshToken);
+
+        return res.json(newTokens);
+      });
+    } catch (error) {
+      return next(error);
+    }
+
+    return null;
   });
 
   return router;

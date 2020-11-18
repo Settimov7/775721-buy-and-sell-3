@@ -2,8 +2,8 @@
 
 exports.fillDataBase = async ({dataBase, mocks = {}}) => {
   const {sequelize, models} = dataBase;
-  const {User, Category, Offer, Comment} = models;
-  const {users = [], categories = [], offers = [], comments = [], offersCategories = []} = mocks;
+  const {User, Category, Offer, Comment, RefreshToken} = models;
+  const {users = [], categories = [], offers = [], comments = [], offersCategories = [], tokens = []} = mocks;
 
   try {
     await sequelize.sync({force: true});
@@ -18,6 +18,8 @@ exports.fillDataBase = async ({dataBase, mocks = {}}) => {
 
     await Offer.bulkCreate(offers);
     await Comment.bulkCreate(comments);
+
+    await RefreshToken.bulkCreate(tokens);
 
     const addCategoryPromises = offersCategories.map(async ({offerId, categoriesIds}) => {
       const offer = await Offer.findByPk(offerId);

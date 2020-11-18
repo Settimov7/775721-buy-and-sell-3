@@ -24,13 +24,28 @@ class RefreshTokenService {
 
     try {
       return RefreshToken.findOne({
-        ...this._selectOptions,
         where: {
           value,
         },
       });
     } catch (error) {
       this._logger.error(`Can't find refresh token. Error: ${error}`);
+
+      return null;
+    }
+  }
+
+  async delete(value) {
+    const {RefreshToken} = this._models;
+
+    try {
+      return RefreshToken.destroy({
+        where: {
+          value,
+        },
+      });
+    } catch (error) {
+      this._logger.error(`Can't delete refresh token. Error: ${error}`);
 
       return null;
     }
