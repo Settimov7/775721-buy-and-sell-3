@@ -341,7 +341,20 @@ describe(`User API end-points`, () => {
       await testDataBase.resetDataBase({tokens});
     });
 
-    it(`should return status 404 if dint found token`, async () => {
+    it(`should return status 400 if sent invalid token`, async () => {
+      const token = {};
+      const res = await request(server).post(PATH).send({token});
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if dint send token`, async () => {
+      const res = await request(server).post(PATH).send({});
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 404 if didnt find token`, async () => {
       const token = `abc`;
       const res = await request(server).post(PATH).send({token});
 
@@ -376,6 +389,80 @@ describe(`User API end-points`, () => {
       await request(server).post(PATH).send({token});
 
       const res = await request(server).post(PATH).send({token});
+
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe(`DELETE api/user/logout`, () => {
+    const PATH = `/api/user/logout`;
+    const users = [
+      {
+        id: 1,
+        name: `Иван Иванович`,
+        email: `ivan@mail.com`,
+        password: `123456`,
+        avatar: `avatar01.jpg`,
+      },
+    ];
+
+    let accessToken;
+    let refreshToken;
+
+    beforeEach(async () => {
+      const userData = {
+        name: `James Bond`,
+        email: `jamesBond@mail.com`,
+        password: `123456`,
+        passwordRepeat: `123456`,
+        avatar: `avatar.png`,
+      };
+
+      await testDataBase.resetDataBase({users});
+      await request(server).post(`/api/user`).send(userData);
+
+      const {body} = await request(server).post(`/api/user/login`).send({email: userData.email, password: userData.password});
+
+      accessToken = body.accessToken;
+      refreshToken = body.refreshToken;
+    });
+
+    it(`should return status 400 if sent invalid token`, async () => {
+      const res = await request(server).delete(PATH).send({token: {}}).set({authorization: `Bearer ${accessToken} ${refreshToken}`});
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 400 if dint send token`, async () => {
+      const res = await request(server).delete(PATH).send({}).set({authorization: `Bearer ${accessToken} ${refreshToken}`});
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 403 if sent invalid access token`, async () => {
+      const invalidToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjA1NzgyNzkwLCJleHAiOjE2MDU3ODI4NDB9.Oy_c5Bw6MjOZwzMB8vtfdsaKCapJTYkGEpy9CgDRJUM`;
+      const res = await request(server).delete(PATH).send({token: refreshToken}).set({authorization: `Bearer ${invalidToken} ${refreshToken}`});
+
+      expect(res.statusCode).toBe(403);
+    });
+
+    it(`should return status 204 if sent unknown token`, async () => {
+      const token = `asd`;
+      const res = await request(server).delete(PATH).send({token}).set({authorization: `Bearer ${accessToken} ${refreshToken}`});
+
+      expect(res.statusCode).toBe(204);
+    });
+
+    it(`should return status 204 if token was deleted`, async () => {
+      const res = await request(server).delete(PATH).send({token: refreshToken}).set({authorization: `Bearer ${accessToken} ${refreshToken}`});
+
+      expect(res.statusCode).toBe(204);
+    });
+
+    it(`should return status 404 when trying to refresh token with old token`, async () => {
+      await request(server).delete(PATH).send({token: refreshToken}).set({authorization: `Bearer ${accessToken} ${refreshToken}`});
+
+      const res = await request(server).post(`/api/user/refresh`).send({token: refreshToken});
 
       expect(res.statusCode).toBe(404);
     });

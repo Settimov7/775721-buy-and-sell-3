@@ -5,7 +5,8 @@ const jwt = require(`jsonwebtoken`);
 
 const {isRequestDataValid} = require(`../middlewares/is-request-data-valid`);
 const {isUserEmailUnique} = require(`../middlewares/is-user-email-unique`);
-const {userRegisterDataSchema, userLoginDataSchema} = require(`../schema/user`);
+const {isUserAuthorized} = require(`../middlewares/is-user-authorized`);
+const {userRegisterDataSchema, userLoginDataSchema, tokenDataSchema} = require(`../schema/user`);
 const {HttpStatusCode} = require(`../../constants`);
 const {JWT_REFRESH_SECRET} = require(`../../config`);
 const {makeTokens} = require(`../jwt/make-tokens`);
@@ -14,6 +15,7 @@ const Route = {
   INDEX: `/`,
   LOGIN: `/login`,
   REFRESH: `/refresh`,
+  LOGOUT: `/logout`,
 };
 
 const createUserRouter = ({userService, refreshTokenService, logger}) => {
@@ -21,7 +23,9 @@ const createUserRouter = ({userService, refreshTokenService, logger}) => {
 
   const isRegisterRequestDataValidMiddleware = isRequestDataValid({schema: userRegisterDataSchema, logger});
   const isLoginRequestDataValidMiddleware = isRequestDataValid({schema: userLoginDataSchema, logger});
+  const isTokenDataValidMiddleware = isRequestDataValid({schema: tokenDataSchema, logger});
   const isUserEmailUniqueMiddleware = isUserEmailUnique({service: userService, logger});
+  const isUserAuthorizedMiddleware = isUserAuthorized({logger});
 
   router.post(Route.INDEX, [isRegisterRequestDataValidMiddleware, isUserEmailUniqueMiddleware], async (req, res, next) => {
     const {name, email, password, passwordRepeat, avatar} = req.body;
@@ -86,7 +90,7 @@ const createUserRouter = ({userService, refreshTokenService, logger}) => {
     }
   });
 
-  router.post(Route.REFRESH, async (req, res, next) => {
+  router.post(Route.REFRESH, [isTokenDataValidMiddleware], async (req, res, next) => {
     const {token} = req.body;
 
     try {
@@ -113,6 +117,18 @@ const createUserRouter = ({userService, refreshTokenService, logger}) => {
     }
 
     return null;
+  });
+
+  router.delete(Route.LOGOUT, [isUserAuthorizedMiddleware, isTokenDataValidMiddleware], async (req, res, next) => {
+    const {token} = req.body;
+
+    try {
+      await refreshTokenService.delete(token);
+
+      return res.sendStatus(HttpStatusCode.NO_CONTENT);
+    } catch (error) {
+      return next(error);
+    }
   });
 
   return router;

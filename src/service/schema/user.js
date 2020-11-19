@@ -30,3 +30,7 @@ exports.userLoginDataSchema = Joi.object({
   email: emailSchema,
   password: passwordSchema,
 });
+
+exports.tokenDataSchema = Joi.object({
+  token: Joi.string().required(),
+});
