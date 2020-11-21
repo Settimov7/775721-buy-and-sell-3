@@ -5,6 +5,7 @@ const {Router} = require(`express`);
 const {HttpStatusCode} = require(`../../constants`);
 const {isRequestDataValid} = require(`../middlewares/is-request-data-valid`);
 const {isRequestParamsValid} = require(`../middlewares/is-request-params-valid`);
+const {isUserAuthorized} = require(`../middlewares/is-user-authorized`);
 const {commentDataSchema, commentParamsSchema} = require(`../schema/comment`);
 
 const Route = {
@@ -16,6 +17,7 @@ const createCommentRouter = ({commentService, logger}) => {
   const router = new Router({mergeParams: true});
   const isRequestParamsValidMiddleware = isRequestParamsValid({schema: commentParamsSchema, logger});
   const isRequestDataValidMiddleware = isRequestDataValid({schema: commentDataSchema, logger});
+  const isUserAuthorizedMiddleware = isUserAuthorized({logger});
 
   router.get(Route.INDEX, async (req, res, next) => {
     const {offerId} = req.params;
@@ -29,12 +31,13 @@ const createCommentRouter = ({commentService, logger}) => {
     }
   });
 
-  router.post(Route.INDEX, isRequestDataValidMiddleware, async (req, res, next) => {
+  router.post(Route.INDEX, [isUserAuthorizedMiddleware, isRequestDataValidMiddleware], async (req, res, next) => {
+    const {userId} = res.locals;
     const {offerId} = req.params;
     const {text} = req.body;
 
     try {
-      const newComment = await commentService.create(offerId, text);
+      const newComment = await commentService.create({userId, offerId, text});
 
       res.status(HttpStatusCode.CREATED).json(newComment);
     } catch (error) {
@@ -42,7 +45,7 @@ const createCommentRouter = ({commentService, logger}) => {
     }
   });
 
-  router.delete(Route.COMMENT, isRequestParamsValidMiddleware, async (req, res, next) => {
+  router.delete(Route.COMMENT, [isUserAuthorizedMiddleware, isRequestParamsValidMiddleware], async (req, res, next) => {
     const {commentId} = req.params;
 
     try {

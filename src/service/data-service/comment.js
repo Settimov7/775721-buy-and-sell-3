@@ -29,7 +29,7 @@ class CommentService {
     }
   }
 
-  async create(offerId, text) {
+  async create({userId, offerId, text}) {
     const {Offer, Comment} = this._models;
 
     try {
@@ -37,7 +37,7 @@ class CommentService {
 
       const newComment = await offer.createComment({
         message: text,
-        user_id: 1, /* eslint-disable-line */
+        [`user_id`]: userId,
       });
 
       return await Comment.findByPk(newComment.id, this._selectOptions);
