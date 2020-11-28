@@ -1,8 +1,8 @@
 'use strict';
 
 const {request} = require(`../request`);
-const {API_URL} = require(`../constants`);
 const {HttpStatusCode} = require(`../../constants`);
+const {API_URL} = require(`../../config`);
 
 exports.getAddPost = async (req, res, next) => {
   try {

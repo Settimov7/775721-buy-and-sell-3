@@ -1,4 +1,4 @@
-header.header
+header(class=(isAuthorized ? 'header header--logged' : 'header'))
   .header__wrapper
     a.header__logo.logo(href='/')
       img(src='/img/logo.svg', width='179', height='34', alt='Логотип Куплю Продам')
@@ -8,6 +8,8 @@ header.header
           a(href='/') Публикации
         li.header__item
           a(href='/my/comments') Комментарии
+        li.header__item
+         a(href='/logout') Выход
     form.search(method='GET', action='http://localhost:8080/search', autocomplete='off')
       input(type='search', name='search', placeholder='Поиск', aria-label='Поиск')
       .search__icon

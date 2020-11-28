@@ -2,9 +2,9 @@
 
 const {request} = require(`../request`);
 const {createPaginationPages} = require(`./utils`);
-const {API_URL} = require(`../constants`);
 const {HttpStatusCode} = require(`../../constants`);
 const {OFFERS_LIMIT_QUANTITY_ON_PAGE} = require(`./constants`);
+const {API_URL} = require(`../../config`);
 
 const REQUIRED_NUMBER_OF_OFFERS = 3;
 const DEFAULT_PAGE = 1;

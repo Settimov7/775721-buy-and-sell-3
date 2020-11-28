@@ -1,3 +1,3 @@
 'use strict';
 
-exports.API_URL = `http://localhost:3000/api`;
+exports.AUTHORIZATION_KEY = `authorization`;

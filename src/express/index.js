@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require(`path`);
+const cookieParser = require(`cookie-parser`);
 
 const express = require(`express`);
 const chalk = require(`chalk`);
@@ -9,8 +10,10 @@ const formidableMiddleware = require(`express-formidable`);
 const mainRouter = require(`./routes/main-routes`);
 const myRouter = require(`./routes/my-routes`);
 const offersRouter = require(`./routes/offers-routes`);
+const {AUTHORIZATION_KEY} = require(`./constants`);
 const {HttpStatusCode} = require(`../constants`);
-const {UPLOAD_DIR} = require(`../config`);
+const {UPLOAD_DIR, API_URL} = require(`../config`);
+const {request} = require(`./request`);
 
 const DEFAULT_PORT = 8080;
 const PUBLIC_DIR = `public`;
@@ -30,6 +33,33 @@ app.use(formidableMiddleware({
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 
 app.use(express.urlencoded({extended: false}));
+
+app.use(cookieParser());
+
+app.use(async (req, res, next) => {
+  const authorization = req.cookies[AUTHORIZATION_KEY];
+
+  if (authorization) {
+    const [,, refreshToken] = authorization.split(` `);
+
+    const {statusCode, body} = await request.post({url: `${ API_URL }/user/refresh`, json: true, body: {token: refreshToken}});
+
+    if (statusCode === HttpStatusCode.OK) {
+      const authorizationValue = `Bearer ${body.accessToken} ${body.refreshToken}`;
+
+      res.cookie(AUTHORIZATION_KEY, authorizationValue, {httpOnly: true});
+      res.locals = {
+        isAuthorized: true,
+        tokens: body,
+        headers: {
+          [AUTHORIZATION_KEY]: authorizationValue,
+        },
+      };
+    }
+  }
+
+  next();
+});
 
 app.use(`/`, mainRouter);
 app.use(`/my`, myRouter);
