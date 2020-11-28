@@ -14,6 +14,7 @@ const {AUTHORIZATION_KEY} = require(`./constants`);
 const {HttpStatusCode} = require(`../constants`);
 const {UPLOAD_DIR, API_URL} = require(`../config`);
 const {request} = require(`./request`);
+const {isUserHasAccess} = require(`./middlewars/is-user-has-access`);
 
 const DEFAULT_PORT = 8080;
 const PUBLIC_DIR = `public`;
@@ -62,7 +63,7 @@ app.use(async (req, res, next) => {
 });
 
 app.use(`/`, mainRouter);
-app.use(`/my`, myRouter);
+app.use(`/my`, [isUserHasAccess], myRouter);
 app.use(`/offers`, offersRouter);
 app.use((req, res) => res.status(HttpStatusCode.NOT_FOUND).render(`errors/404`));
 // eslint-disable-next-line
