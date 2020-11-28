@@ -1,11 +1,12 @@
 'use strict';
 
 const path = require(`path`);
-const cookieParser = require(`cookie-parser`);
 
 const express = require(`express`);
 const chalk = require(`chalk`);
 const formidableMiddleware = require(`express-formidable`);
+const cookieParser = require(`cookie-parser`);
+const csrf = require(`csurf`);
 
 const mainRouter = require(`./routes/main-routes`);
 const myRouter = require(`./routes/my-routes`);
@@ -19,6 +20,7 @@ const {isUserHasAccess} = require(`./middlewars/is-user-has-access`);
 const DEFAULT_PORT = 8080;
 const PUBLIC_DIR = `public`;
 const TEMPLATES_DIR = `templates`;
+const csrfProtection = csrf({cookie: true});
 
 const app = express();
 
@@ -37,6 +39,14 @@ app.use(express.urlencoded({extended: false}));
 
 app.use(cookieParser());
 
+app.use(csrfProtection);
+
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+
+  next();
+});
+
 app.use(async (req, res, next) => {
   const authorization = req.cookies[AUTHORIZATION_KEY];
 
@@ -48,8 +58,9 @@ app.use(async (req, res, next) => {
     if (statusCode === HttpStatusCode.OK) {
       const authorizationValue = `Bearer ${body.accessToken} ${body.refreshToken}`;
 
-      res.cookie(AUTHORIZATION_KEY, authorizationValue, {httpOnly: true});
+      res.cookie(AUTHORIZATION_KEY, authorizationValue, {httpOnly: true, sameSite: `strict`});
       res.locals = {
+        ...res.locals,
         isAuthorized: true,
         tokens: body,
         headers: {

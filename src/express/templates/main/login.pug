@@ -3,7 +3,7 @@ extends ../layout
 block content
   main.page-content
     section.login
-      form.login__form.form(action='/login', method='post', enctype='multipart/form-data')
+      form.login__form.form(action=(`/login?_csrf=${csrfToken}`), method='post', enctype='multipart/form-data')
         .login__title
           a.login__link(href='/register') Регистрация
           h2 Вход

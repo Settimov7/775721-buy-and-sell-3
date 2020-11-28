@@ -6,7 +6,7 @@ block content
       .ticket-form__wrapper
         h1.ticket-form__title Новая публикация
         .ticket-form__tile
-          form.ticket-form__form.form(action='/offers/add', method='POST', autocomplete='off')
+          form.ticket-form__form.form(action=(`/offers/add?_csrf=${csrfToken}`), method='POST', autocomplete='off', enctype='multipart/form-data')
             if errors && errors.length
               ul
                 each error in errors

@@ -89,7 +89,7 @@ exports.postLogin = async (req, res, next) => {
     if (statusCode === HttpStatusCode.OK) {
       const {accessToken, refreshToken} = body;
 
-      res.cookie(AUTHORIZATION_KEY, `Bearer ${accessToken} ${refreshToken}`, {httpOnly: true});
+      res.cookie(AUTHORIZATION_KEY, `Bearer ${accessToken} ${refreshToken}`, {httpOnly: true, sameSite: `strict`});
 
       return res.redirect(`/`);
     }
