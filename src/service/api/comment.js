@@ -6,6 +6,8 @@ const {HttpStatusCode} = require(`../../constants`);
 const {isRequestDataValid} = require(`../middlewares/is-request-data-valid`);
 const {isRequestParamsValid} = require(`../middlewares/is-request-params-valid`);
 const {isUserAuthorized} = require(`../middlewares/is-user-authorized`);
+const {isCommentExists} = require(`../middlewares/is-comment-exists`);
+const {isCommentBelongsToUser} = require(`../middlewares/is-comment-belongs-to-user`);
 const {commentDataSchema, commentParamsSchema} = require(`../schema/comment`);
 
 const Route = {
@@ -18,6 +20,8 @@ const createCommentRouter = ({commentService, logger}) => {
   const isRequestParamsValidMiddleware = isRequestParamsValid({schema: commentParamsSchema, logger});
   const isRequestDataValidMiddleware = isRequestDataValid({schema: commentDataSchema, logger});
   const isUserAuthorizedMiddleware = isUserAuthorized({logger});
+  const isCommentExistsMiddleware = isCommentExists({logger, service: commentService});
+  const isCommentBelongsToUserMiddleware = isCommentBelongsToUser({logger, service: commentService});
 
   router.get(Route.INDEX, async (req, res, next) => {
     const {offerId} = req.params;
@@ -45,17 +49,16 @@ const createCommentRouter = ({commentService, logger}) => {
     }
   });
 
-  router.delete(Route.COMMENT, [isUserAuthorizedMiddleware, isRequestParamsValidMiddleware], async (req, res, next) => {
+  router.delete(Route.COMMENT, [
+    isUserAuthorizedMiddleware,
+    isRequestParamsValidMiddleware,
+    isCommentExistsMiddleware,
+    isCommentBelongsToUserMiddleware,
+  ], async (req, res, next) => {
     const {commentId} = req.params;
 
     try {
       const deletedComment = await commentService.delete(commentId);
-
-      if (!deletedComment) {
-        res.status(HttpStatusCode.NOT_FOUND).send(`Not found comment with id: ${ commentId }`);
-
-        return logger.error(`Cant find comment with id: ${ commentId }.`);
-      }
 
       return res.status(HttpStatusCode.OK).json(deletedComment);
     } catch (error) {

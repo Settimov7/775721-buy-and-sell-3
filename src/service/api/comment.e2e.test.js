@@ -212,6 +212,24 @@ describe(`Comment API end-points`, () => {
       expect(res.statusCode).toBe(401);
     });
 
+    it(`should return status 403 if tried to delete someone else's comment`, async () => {
+      const secondUserData = {
+        name: `Ivan Ivanov`,
+        email: `ivanIvamon@mail.com`,
+        password: `123456`,
+        passwordRepeat: `123456`,
+        avatar: `avatar.png`,
+      };
+      await request(server).post(`/api/user`).send(secondUserData);
+
+      const {body: loginBody} = await request(server).post(`/api/user/login`).send({email: secondUserData.email, password: secondUserData.password});
+      const authorizationHeader = `Bearer ${loginBody.accessToken} ${loginBody.refreshToken}`;
+
+      const res = await request(server).delete(`/api/offers/${offerId}/comments/${commentId}`).set({authorization: authorizationHeader});
+
+      expect(res.statusCode).toBe(403);
+    });
+
     it(`should return status 200 if comment was deleted`, async () => {
       const res = await request(server).delete(`/api/offers/${offerId}/comments/${commentId}`).set(headers);
 

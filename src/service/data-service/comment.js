@@ -71,6 +71,41 @@ class CommentService {
       return null;
     }
   }
+
+  async isExists(id) {
+    const {Comment} = this._models;
+    const commentId = Number.parseInt(id, 10);
+
+    try {
+      const comment = await Comment.findByPk(commentId);
+
+      return !!comment;
+    } catch (error) {
+      this._logger.error(`Can't check existence of comment. Error: ${ error }`);
+
+      return false;
+    }
+  }
+
+  async isCommentBelongToUser(commentId, userId) {
+    const {Comment} = this._models;
+
+    try {
+      const comment = await Comment.findByPk(commentId, {
+        raw: true,
+        attributes: [
+          `id`,
+          [`user_id`, `userId`],
+        ],
+      });
+
+      return comment.userId === userId;
+    } catch (error) {
+      this._logger.error(`Can't check whom comment belongs. Error: ${ error }`);
+
+      return false;
+    }
+  }
 }
 
 exports.CommentService = CommentService;
