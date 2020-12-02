@@ -9,74 +9,66 @@ const testDataBase = require(`../database/testDataBase`);
 describe(`Offer API end-points`, () => {
   const server = createServer({dataBase: testDataBase});
 
+  const userData = {
+    name: `James Bond`,
+    email: `jamesBond@mail.com`,
+    password: `123456`,
+    passwordRepeat: `123456`,
+    avatar: `avatar.png`,
+  };
+  const categories = [
+    {
+      id: 1,
+      title: `Игры`,
+      image: `category01.jpg`,
+    },
+    {
+      id: 2,
+      title: `Разное`,
+      image: `category02.jpg`,
+    },
+    {
+      id: 3,
+      title: `Животные`,
+      image: `category03.jpg`,
+    },
+  ];
+  const firstOfferData = {
+    title: `Куплю новую приставку Xbox`,
+    picture: `item01.jpg`,
+    sum: 67782.42,
+    type: `buy`,
+    description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
+    category: [1, 2]
+  };
+  const secondOfferData = {
+    title: `Продам породистого кота`,
+    picture: `item02.jpg`,
+    sum: 557460.7,
+    type: `sell`,
+    description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
+    category: [3]
+  };
+
+  const headers = {};
+
+  beforeEach(async () => {
+    await testDataBase.resetDataBase({categories});
+
+    await request(server).post(`/api/user`).send(userData);
+
+    const {body: loginBody} = await request(server).post(`/api/user/login`).send({email: userData.email, password: userData.password});
+    headers.authorization = `Bearer ${loginBody.accessToken} ${loginBody.refreshToken}`;
+
+    await request(server).post(`/api/offers`).send(firstOfferData).set(headers);
+    await request(server).post(`/api/offers`).send(secondOfferData).set(headers);
+  });
+
   afterAll(() => {
     testDataBase.sequelize.close();
   });
 
   describe(`GET api/offers`, () => {
-    const users = [
-      {
-        id: 1,
-        name: `Иван Абрамов`,
-        email: `ivan_abramov@mail.local`,
-        password: 123456,
-        avatar: `avatar01.jpg`,
-      },
-    ];
-    const categories = [
-      {
-        id: 1,
-        title: `Игры`,
-        image: `category01.jpg`,
-      },
-      {
-        id: 2,
-        title: `Разное`,
-        image: `category02.jpg`,
-      },
-      {
-        id: 3,
-        title: `Животные`,
-        image: `category03.jpg`,
-      },
-    ];
-    const offers = [
-      {
-        id: 1,
-        title: `Куплю новую приставку Xbox`,
-        image: `item01.jpg`,
-        sum: 67782.42,
-        type: `buy`,
-        description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-        user_id: 1, /* eslint-disable-line */
-        createdAt: `2020-02-15`,/* eslint-disable-line */
-      },
-      {
-        id: 2,
-        title: `Продам породистого кота`,
-        image: `item02.jpg`,
-        sum: 557460.7,
-        type: `sell`,
-        description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-        user_id: 1, /* eslint-disable-line */
-        createdAt: `2020-02-25`, /* eslint-disable-line */
-      },
-    ];
-    const offersCategories = [
-      {
-        offerId: 1,
-        categoriesIds: [1, 2],
-      },
-      {
-        offerId: 2,
-        categoriesIds: [3],
-      },
-    ];
-
-    beforeEach(async () => {
-      await testDataBase.resetDataBase({users, categories, offers, offersCategories});
-    });
-
     it(`should return status 200 if request was successful`, async () => {
       const res = await request(server).get(`/api/offers`);
 
@@ -86,7 +78,9 @@ describe(`Offer API end-points`, () => {
     it(`should return correct quantity of offers`, async () => {
       const res = await request(server).get(`/api/offers`);
 
-      expect(res.body.quantity).toEqual(offers.length);
+      console.log(res.body);
+
+      expect(res.body.quantity).toEqual(2);
     });
 
     it(`should return correct offers if request was successful`, async () => {
@@ -116,241 +110,59 @@ describe(`Offer API end-points`, () => {
       expect(res.body.offers).toEqual(expectedOffers);
     });
 
-    it(`with offset = 1 should return offers without first offer`, async () => {
+    it(`with offset = 1 should return first offer`, async () => {
       const offset = 1;
-      const offersForTestOffset = [
-        {
-          id: 1,
-          title: `Куплю новую приставку Xbox`,
-          image: `item01.jpg`,
-          sum: 67782.42,
-          type: `buy`,
-          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-          user_id: 1, /* eslint-disable-line */
-          createdAt: `2020-02-15`, /* eslint-disable-line */
-        },
-        {
-          id: 2,
-          title: `Продам породистого кота`,
-          image: `item02.jpg`,
-          sum: 557460.7,
-          type: `sell`,
-          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-          user_id: 1, /* eslint-disable-line */
-          createdAt: `2020-02-10`, /* eslint-disable-line */
-        },
-        {
-          id: 3,
-          title: `Отдам в хорошие руки подшивку «Мурзилка»`,
-          image: `item03.jpg`,
-          sum: 12331.2,
-          type: `buy`,
-          description: `Бонусом отдам все аксессуары. Это настоящая находка для коллекционера!`,
-          user_id: 1, /* eslint-disable-line */
-          createdAt: `2020-02-05`, /* eslint-disable-line */
-        },
-      ];
-      const offersCategoriesForTestOffset = [
-        {
-          offerId: 1,
-          categoriesIds: [1],
-        },
-        {
-          offerId: 2,
-          categoriesIds: [2],
-        },
-        {
-          offerId: 3,
-          categoriesIds: [3],
-        },
-      ];
+      const expectedOffers = [{
+        title: `Куплю новую приставку Xbox`,
+        picture: `item01.jpg`,
+        sum: `67782.42`,
+        type: `buy`,
+        description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
+        category: [`Игры`, `Разное`]
+      }];
+
+      const res = await request(server).get(`/api/offers?offset=${ offset }`);
+
+      expect(res.body.offers).toMatchObject(expectedOffers);
+    });
+
+    it(`with limit = 1 should return second offer`, async () => {
+      const limit = 1;
       const expectedOffers = [
         {
-          id: 2,
           title: `Продам породистого кота`,
           picture: `item02.jpg`,
           sum: `557460.70`,
           type: `sell`,
           description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-          category: [`Разное`],
-        },
-        {
-          id: 3,
-          title: `Отдам в хорошие руки подшивку «Мурзилка»`,
-          picture: `item03.jpg`,
-          sum: `12331.20`,
-          type: `buy`,
-          description: `Бонусом отдам все аксессуары. Это настоящая находка для коллекционера!`,
           category: [`Животные`],
         },
       ];
 
-      await testDataBase.resetDataBase({
-        users,
-        categories,
-        offers: offersForTestOffset,
-        offersCategories: offersCategoriesForTestOffset,
-      });
-
-      const res = await request(server).get(`/api/offers?offset=${ offset }`);
-
-      expect(res.body.offers).toEqual(expectedOffers);
-    });
-
-    it(`with limit = 1 should return first offer`, async () => {
-      const limit = 1;
-      const offersForTestLimit = [
-        {
-          id: 1,
-          title: `Куплю новую приставку Xbox`,
-          image: `item01.jpg`,
-          sum: 67782.42,
-          type: `buy`,
-          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-          user_id: 1, /* eslint-disable-line */
-          createdAt: `2020-02-15`, /* eslint-disable-line */
-        },
-        {
-          id: 2,
-          title: `Отдам в хорошие руки подшивку «Мурзилка»`,
-          image: `item03.jpg`,
-          sum: 12331.2,
-          type: `buy`,
-          description: `Бонусом отдам все аксессуары. Это настоящая находка для коллекционера!`,
-          user_id: 1, /* eslint-disable-line */
-          createdAt: `2020-02-05`, /* eslint-disable-line */
-        },
-      ];
-      const offersCategoriesForTestLimit = [
-        {
-          offerId: 1,
-          categoriesIds: [1],
-        },
-        {
-          offerId: 2,
-          categoriesIds: [2],
-        },
-      ];
-      const expectedOffers = [
-        {
-          id: 1,
-          title: `Куплю новую приставку Xbox`,
-          picture: `item01.jpg`,
-          sum: `67782.42`,
-          type: `buy`,
-          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-          category: [`Игры`],
-        },
-      ];
-
-      await testDataBase.resetDataBase({
-        users,
-        categories,
-        offers: offersForTestLimit,
-        offersCategories: offersCategoriesForTestLimit,
-      });
-
       const res = await request(server).get(`/api/offers?limit=${ limit }`);
 
-      expect(res.body.offers).toEqual(expectedOffers);
+      expect(res.body.offers).toMatchObject(expectedOffers);
     });
 
-    it(`with offset = 1 and limit = 1 should return offer with id = 2`, async () => {
+    it(`with offset = 1 and limit = 1 should return offer with id = 1`, async () => {
       const offset = 1;
       const limit = 1;
-      const offersForTestOffsetAndLimit = [
-        {
-          id: 1,
-          title: `Куплю новую приставку Xbox`,
-          image: `item01.jpg`,
-          sum: 67782.42,
-          type: `buy`,
-          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-          user_id: 1, /* eslint-disable-line */
-          createdAt: `2020-02-15`, /* eslint-disable-line */
-        },
-        {
-          id: 2,
-          title: `Отдам в хорошие руки подшивку «Мурзилка»`,
-          image: `item02.jpg`,
-          sum: 12331.2,
-          type: `buy`,
-          description: `Бонусом отдам все аксессуары. Это настоящая находка для коллекционера!`,
-          user_id: 1, /* eslint-disable-line */
-          createdAt: `2020-02-10`, /* eslint-disable-line */
-        },
-        {
-          id: 3,
-          title: `Продам породистого кота`,
-          image: `item03.jpg`,
-          sum: 557460.7,
-          type: `sell`,
-          description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-          user_id: 1, /* eslint-disable-line */
-          createdAt: `2020-02-05`, /* eslint-disable-line */
-        },
-      ];
-      const offersCategoriesForTestOffsetAndLimit = [
-        {
-          offerId: 1,
-          categoriesIds: [1],
-        },
-        {
-          offerId: 2,
-          categoriesIds: [2],
-        },
-        {
-          offerId: 3,
-          categoriesIds: [3],
-        },
-      ];
-      const expectedOffers = [
-        {
-          id: 2,
-          title: `Отдам в хорошие руки подшивку «Мурзилка»`,
-          picture: `item02.jpg`,
-          sum: `12331.20`,
-          type: `buy`,
-          description: `Бонусом отдам все аксессуары. Это настоящая находка для коллекционера!`,
-          category: [`Разное`],
-        },
-      ];
-
-      await testDataBase.resetDataBase({
-        users,
-        categories,
-        offers: offersForTestOffsetAndLimit,
-        offersCategories: offersCategoriesForTestOffsetAndLimit,
-      });
+      const expectedOffers = [{
+        title: `Куплю новую приставку Xbox`,
+        picture: `item01.jpg`,
+        sum: `67782.42`,
+        type: `buy`,
+        description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
+        category: [`Игры`, `Разное`]
+      }];
 
       const res = await request(server).get(`/api/offers?offset=${ offset }&limit=${ limit }`);
 
-      expect(res.body.offers).toEqual(expectedOffers);
+      expect(res.body.offers).toMatchObject(expectedOffers);
     });
   });
 
   describe(`POST api/offers`, () => {
-    const users = [
-      {
-        id: 1,
-        name: `Иван Абрамов`,
-        email: `ivan_abramov@mail.local`,
-        password: 123456,
-        avatar: `avatar01.jpg`,
-      },
-    ];
-    const categories = [
-      {
-        id: 1,
-        title: `Игры`,
-        image: `category01.jpg`,
-      },
-    ];
-
-    beforeEach(async () => {
-      await testDataBase.resetDataBase({users, categories});
-    });
-
     it(`should return status 400 if have sent title shorter than 10 letters`, async () => {
       const data = {
         title: `Title`,
@@ -361,7 +173,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -376,7 +188,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -390,7 +202,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -405,7 +217,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -420,7 +232,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -434,7 +246,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -449,7 +261,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -476,7 +288,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -490,7 +302,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -505,7 +317,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -520,7 +332,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -534,7 +346,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -549,7 +361,7 @@ describe(`Offer API end-points`, () => {
         sum: 99,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -563,7 +375,7 @@ describe(`Offer API end-points`, () => {
         type: `sell`,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -579,9 +391,24 @@ describe(`Offer API end-points`, () => {
         token: `token`,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
+    });
+
+    it(`should return status 401 if have sent authorization headers`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [1],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: `1234`,
+      };
+
+      const res = await request(server).post(`/api/offers`).send(data);
+
+      expect(res.statusCode).toBe(401);
     });
 
     it(`should return status 201 if have sent valid data`, async () => {
@@ -594,7 +421,7 @@ describe(`Offer API end-points`, () => {
         sum: `1234`,
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.statusCode).toBe(201);
     });
@@ -617,7 +444,7 @@ describe(`Offer API end-points`, () => {
         category: [`Игры`],
       };
 
-      const res = await request(server).post(`/api/offers`).send(data);
+      const res = await request(server).post(`/api/offers`).send(data).set(headers);
 
       expect(res.body).toHaveProperty(`id`);
       expect(res.body).toMatchObject(expectedOffer);
@@ -633,7 +460,7 @@ describe(`Offer API end-points`, () => {
         sum: 1234,
       };
 
-      const {body: newOffer} = await request(server).post(`/api/offers`).send(data);
+      const {body: newOffer} = await request(server).post(`/api/offers`).send(data).set(headers);
       const res = await request(server).get(`/api/offers`);
 
       expect(res.body.offers).toContainEqual(newOffer);
@@ -641,62 +468,6 @@ describe(`Offer API end-points`, () => {
   });
 
   describe(`GET api/offers/:offerId`, () => {
-    const users = [
-      {
-        id: 1,
-        name: `Иван Абрамов`,
-        email: `ivan_abramov@mail.local`,
-        password: 123456,
-        avatar: `avatar01.jpg`,
-      },
-    ];
-    const categories = [
-      {
-        id: 1,
-        title: `Игры`,
-        image: `category01.jpg`,
-      },
-      {
-        id: 2,
-        title: `Животные`,
-        image: `category03.jpg`,
-      },
-    ];
-    const offers = [
-      {
-        id: 1,
-        title: `Куплю новую приставку Xbox`,
-        image: `item01.jpg`,
-        sum: 67782.42,
-        type: `buy`,
-        description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-        user_id: 1, /* eslint-disable-line */
-      },
-      {
-        id: 2,
-        title: `Продам породистого кота`,
-        image: `item02.jpg`,
-        sum: 557460.7,
-        type: `sell`,
-        description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-        user_id: 1, /* eslint-disable-line */
-      },
-    ];
-    const offersCategories = [
-      {
-        offerId: 1,
-        categoriesIds: [1],
-      },
-      {
-        offerId: 2,
-        categoriesIds: [2],
-      },
-    ];
-
-    beforeEach(async () => {
-      await testDataBase.resetDataBase({users, categories, offers, offersCategories});
-    });
-
     it(`should return status 404 if offer doesn't exist`, async () => {
       const res = await request(server).get(`/api/offers/1234`);
 
@@ -718,7 +489,6 @@ describe(`Offer API end-points`, () => {
     it(`should return offer if offer exists`, async () => {
       const res = await request(server).get(`/api/offers/2`);
       const expectedOffer = {
-        id: 2,
         title: `Продам породистого кота`,
         picture: `item02.jpg`,
         sum: `557460.70`,
@@ -727,54 +497,11 @@ describe(`Offer API end-points`, () => {
         category: [`Животные`],
       };
 
-      expect(res.body).toEqual(expectedOffer);
+      expect(res.body).toMatchObject(expectedOffer);
     });
   });
 
   describe(`PUT api/offers/:offerId`, () => {
-    const users = [
-      {
-        id: 1,
-        name: `Иван Абрамов`,
-        email: `ivan_abramov@mail.local`,
-        password: 123456,
-        avatar: `avatar01.jpg`,
-      },
-    ];
-    const categories = [
-      {
-        id: 1,
-        title: `Игры`,
-        image: `category01.jpg`,
-      },
-      {
-        id: 2,
-        title: `Разное`,
-        image: `category02.jpg`,
-      },
-    ];
-    const offers = [
-      {
-        id: 1,
-        title: `Куплю новую приставку Xbox`,
-        image: `item01.jpg`,
-        sum: 67782.42,
-        type: `buy`,
-        description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-        user_id: 1, /* eslint-disable-line */
-      },
-    ];
-    const offersCategories = [
-      {
-        offerId: 1,
-        categoriesIds: [1],
-      },
-    ];
-
-    beforeEach(async () => {
-      await testDataBase.resetDataBase({users, categories, offers, offersCategories});
-    });
-
     it(`should return status 404 if offer doesn't exist`, async () => {
       const data = {
         title: `Заголовок предложения`,
@@ -784,7 +511,7 @@ describe(`Offer API end-points`, () => {
         type: `sell`,
         sum: 12345.67,
       };
-      const res = await request(server).put(`/api/offers/1234`).send(data);
+      const res = await request(server).put(`/api/offers/1234`).send(data).set(headers);
 
       expect(res.statusCode).toBe(404);
     });
@@ -798,7 +525,7 @@ describe(`Offer API end-points`, () => {
         type: `sell`,
         sum: 12345.67,
       };
-      const res = await request(server).put(`/api/offers/abc`).send(data);
+      const res = await request(server).put(`/api/offers/abc`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
@@ -811,12 +538,12 @@ describe(`Offer API end-points`, () => {
         type: `sell`,
         sum: 12345.67,
       };
-      const res = await request(server).put(`/api/offers/1`).send(data);
+      const res = await request(server).put(`/api/offers/1`).send(data).set(headers);
 
       expect(res.statusCode).toBe(400);
     });
 
-    it(`should return status 200 if offer was updated`, async () => {
+    it(`should return status 401 if haven't sent authorization headers`, async () => {
       const data = {
         title: `Заголовок предложения`,
         category: [2],
@@ -827,7 +554,48 @@ describe(`Offer API end-points`, () => {
       };
       const res = await request(server).put(`/api/offers/1`).send(data);
 
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(401);
+    });
+
+    it(`should return status 401 if haven't sent authorization headers`, async () => {
+      const data = {
+        title: `Заголовок предложения`,
+        category: [2],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: 12345.67,
+      };
+      const res = await request(server).put(`/api/offers/1`).send(data);
+
+      expect(res.statusCode).toBe(401);
+    });
+
+    it(`should return status 403 if tried to update someone else's offer`, async () => {
+      const secondUserData = {
+        name: `Ivan Ivanov`,
+        email: `ivanIvamon@mail.com`,
+        password: `123456`,
+        passwordRepeat: `123456`,
+        avatar: `avatar.png`,
+      };
+      await request(server).post(`/api/user`).send(secondUserData);
+
+      const {body: loginBody} = await request(server).post(`/api/user/login`).send({email: secondUserData.email, password: secondUserData.password});
+      const authorizationHeader = `Bearer ${loginBody.accessToken} ${loginBody.refreshToken}`;
+
+      const data = {
+        title: `Заголовок предложения`,
+        category: [2],
+        description: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias consequuntur culpa distinctio, dolore excepturi ipsa iusto laboriosam magni minus natus necessitatibus nemo non quae qui, quia quo sint ullam ut.`,
+        picture: `/picture.jpg`,
+        type: `sell`,
+        sum: 12345.67,
+      };
+
+      const res = await request(server).put(`/api/offers/1`).send(data).set({authorization: authorizationHeader});
+
+      expect(res.statusCode).toBe(403);
     });
 
     it(`should return offer with updated title if offer was updated`, async () => {
@@ -849,107 +617,62 @@ describe(`Offer API end-points`, () => {
         category: [`Разное`],
       };
 
-      const res = await request(server).put(`/api/offers/1`).send(data);
+      const res = await request(server).put(`/api/offers/1`).send(data).set(headers);
 
       expect(res.body).toEqual(expectedOffer);
     });
   });
 
   describe(`DELETE api/offers/:offerId`, () => {
-    const users = [
-      {
-        id: 1,
-        name: `Иван Абрамов`,
-        email: `ivan_abramov@mail.local`,
-        password: 123456,
-        avatar: `avatar01.jpg`,
-      },
-    ];
-    const categories = [
-      {
-        id: 1,
-        title: `Игры`,
-        image: `category01.jpg`,
-      },
-    ];
-    const offers = [
-      {
-        id: 1,
-        title: `Продам новую приставку Sony Playstation 5`,
-        image: `item01.jpg`,
-        sum: 585318.42,
-        type: `sell`,
-        description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-        user_id: 1, /* eslint-disable-line */
-      },
-      {
-        id: 2,
-        title: `Куплю новую приставку Xbox`,
-        image: `item02.jpg`,
-        sum: 67782.42,
-        type: `buy`,
-        description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-        user_id: 1, /* eslint-disable-line */
-      },
-    ];
-    const offersCategories = [
-      {
-        offerId: 1,
-        categoriesIds: [1],
-      },
-      {
-        offerId: 2,
-        categoriesIds: [1],
-      },
-    ];
-
-    beforeEach(async () => {
-      await testDataBase.resetDataBase({users, categories, offers, offersCategories});
-    });
-
     it(`should return status 404 if offer doesn't exist`, async () => {
-      const res = await request(server).delete(`/api/offers/1234`);
+      const res = await request(server).delete(`/api/offers/1234`).set(headers);
 
       expect(res.statusCode).toBe(404);
     });
 
-    it(`should return status 200 if offer was deleted`, async () => {
+    it(`should return status 401 if haven't sent authorization headers`, async () => {
       const res = await request(server).delete(`/api/offers/2`);
+
+      expect(res.statusCode).toBe(401);
+    });
+
+    it(`should return status 403 if tried to delete someone else's offer`, async () => {
+      const secondUserData = {
+        name: `Ivan Ivanov`,
+        email: `ivanIvamon@mail.com`,
+        password: `123456`,
+        passwordRepeat: `123456`,
+        avatar: `avatar.png`,
+      };
+      await request(server).post(`/api/user`).send(secondUserData);
+
+      const {body: loginBody} = await request(server).post(`/api/user/login`).send({email: secondUserData.email, password: secondUserData.password});
+      const authorizationHeader = `Bearer ${loginBody.accessToken} ${loginBody.refreshToken}`;
+
+      const res = await request(server).delete(`/api/offers/2`).set({authorization: authorizationHeader});
+
+      expect(res.statusCode).toBe(403);
+    });
+
+    it(`should return status 200 if offer was deleted`, async () => {
+      const res = await request(server).delete(`/api/offers/2`).set(headers);
 
       expect(res.statusCode).toBe(200);
     });
 
     it(`should return deleted offer if offer was deleted`, async () => {
       const expectedOffer = {
-        id: 2,
-        title: `Куплю новую приставку Xbox`,
+        title: `Продам породистого кота`,
         picture: `item02.jpg`,
-        sum: `67782.42`,
-        type: `buy`,
+        sum: `557460.70`,
+        type: `sell`,
         description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-        category: [`Игры`],
+        category: [`Животные`],
       };
 
-      const res = await request(server).delete(`/api/offers/2`);
+      const res = await request(server).delete(`/api/offers/2`).set(headers);
 
-      expect(res.body).toEqual(expectedOffer);
-    });
-
-    it(`should return offers without deleted offer`, async () => {
-      const expectedOffer = {
-        id: 2,
-        title: `Куплю новую приставку Xbox`,
-        picture: `item02.jpg`,
-        sum: `67782.42`,
-        type: `buy`,
-        description: `Кому нужен этот новый телефон, если тут такое... Даю недельную гарантию.`,
-        category: [`Игры`],
-      };
-
-      await request(server).delete(`/api/offers/2`);
-      const res = await request(server).get(`/api/offers`);
-
-      expect(res.body).not.toContainEqual(expectedOffer);
+      expect(res.body).toMatchObject(expectedOffer);
     });
   });
 });

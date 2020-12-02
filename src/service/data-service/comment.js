@@ -29,7 +29,7 @@ class CommentService {
     }
   }
 
-  async create(offerId, text) {
+  async create({userId, offerId, text}) {
     const {Offer, Comment} = this._models;
 
     try {
@@ -37,7 +37,7 @@ class CommentService {
 
       const newComment = await offer.createComment({
         message: text,
-        user_id: 1, /* eslint-disable-line */
+        [`user_id`]: userId,
       });
 
       return await Comment.findByPk(newComment.id, this._selectOptions);
@@ -69,6 +69,41 @@ class CommentService {
       this._logger.error(`Can't delete comment with id: ${ id }. Error: ${ error }`);
 
       return null;
+    }
+  }
+
+  async isExists(id) {
+    const {Comment} = this._models;
+    const commentId = Number.parseInt(id, 10);
+
+    try {
+      const comment = await Comment.findByPk(commentId);
+
+      return !!comment;
+    } catch (error) {
+      this._logger.error(`Can't check existence of comment. Error: ${ error }`);
+
+      return false;
+    }
+  }
+
+  async isCommentBelongToUser(commentId, userId) {
+    const {Comment} = this._models;
+
+    try {
+      const comment = await Comment.findByPk(commentId, {
+        raw: true,
+        attributes: [
+          `id`,
+          [`user_id`, `userId`],
+        ],
+      });
+
+      return comment.userId === userId;
+    } catch (error) {
+      this._logger.error(`Can't check whom comment belongs. Error: ${ error }`);
+
+      return false;
     }
   }
 }

@@ -18,9 +18,15 @@
 `TEST_DB_NAME` - название БД;  
 `TEST_DB_PASSWORD` - пароль;  
 
+## Фронт-сервер
+
+`API_URL` - URL api-сервера
+
 ## Безопасность
 
 `PASSWORD_SALT_ROUNDS` - коэффициент сложности хеширования
+`JWT_ACCESS_SECRET` - секрет для основного токена
+`JWT_REFRESH_SECRET` - секрет для refresh токена
 
 ## Хранение файлов
 

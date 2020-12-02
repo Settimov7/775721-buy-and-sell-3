@@ -8,7 +8,7 @@ exports.createPaginationPages = ({quantity, currentPage}) => {
   const pages = Array.from({length: quantity}, (_, index) => {
     const visibleIndex = index + 1;
     const isActive = index === currentPageIndex;
-    const href = isActive ? null : `?page=${ visibleIndex }`;
+    const href = isActive ? null : `?page=${visibleIndex}`;
 
     return {
       title: visibleIndex,
@@ -19,7 +19,7 @@ exports.createPaginationPages = ({quantity, currentPage}) => {
 
   if (hasPreviousPageLink) {
     const title = `Назад`;
-    const href = `?page=${ currentPage - 1 }`;
+    const href = `?page=${currentPage - 1}`;
 
     pages.unshift({
       title,
@@ -29,7 +29,7 @@ exports.createPaginationPages = ({quantity, currentPage}) => {
 
   if (hasNextPageLink) {
     const title = `Вперед`;
-    const href = `?page=${ currentPage + 1 }`;
+    const href = `?page=${currentPage + 1}`;
 
     pages.push({
       title,
@@ -39,3 +39,11 @@ exports.createPaginationPages = ({quantity, currentPage}) => {
 
   return pages;
 };
+
+exports.parseErrorDetailsToErrorMessages = (details) => details.reduce((messages, {path, message}) => {
+  const key = path.toString();
+
+  messages[key] = message;
+
+  return messages;
+}, {});

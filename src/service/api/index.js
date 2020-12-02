@@ -15,14 +15,14 @@ const Route = {
   USER: `/user`,
 };
 
-const createRouter = ({offerService, commentService, categoryService, userService, logger}) => {
+const createRouter = ({offerService, commentService, categoryService, userService, refreshTokenService, logger}) => {
   const router = new Router();
 
   const commentRouter = createCommentRouter({commentService, logger});
   const offerRouter = createOfferRouter({offerService, commentRouter, logger});
   const categoryRouter = createCategoryRouter({categoryService});
   const searchRouter = createSearchRouter({offerService, logger});
-  const userRouter = createUserRouter({userService, logger});
+  const userRouter = createUserRouter({userService, refreshTokenService, logger});
 
   router.use(Route.OFFERS, offerRouter);
   router.use(Route.CATEGORIES, categoryRouter);

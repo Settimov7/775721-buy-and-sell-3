@@ -1,8 +1,8 @@
 'use strict';
 
 const {request} = require(`../request`);
-const {API_URL} = require(`../constants`);
 const {HttpStatusCode} = require(`../../constants`);
+const {API_URL} = require(`../../config`);
 
 exports.getAddPost = async (req, res, next) => {
   try {
@@ -19,21 +19,20 @@ exports.getAddPost = async (req, res, next) => {
 };
 
 exports.postAddPost = async (req, res, next) => {
+  const {headers} = res.locals;
+  const {avatar, title, description, category, sum, type} = req.fields;
+  const offerCategories = Array.isArray(category) ? category : [category];
+  const offer = {
+    title,
+    type,
+    category: offerCategories,
+    description,
+    picture: avatar,
+    sum,
+  };
+
   try {
-    const {avatar, title, description, category, sum, type} = req.body;
-
-    const offerCategories = Array.isArray(category) ? category : [category];
-
-    const offer = {
-      title,
-      type,
-      category: offerCategories,
-      description,
-      picture: avatar,
-      sum,
-    };
-
-    const {statusCode, body} = await request.post({url: `${ API_URL }/offers`, json: true, body: offer});
+    const {statusCode, body} = await request.post({url: `${ API_URL }/offers`, json: true, headers, body: offer});
 
     if (statusCode === HttpStatusCode.CREATED) {
       return res.redirect(`/my`);

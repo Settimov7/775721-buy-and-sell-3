@@ -58,12 +58,12 @@ class OfferService {
     }
   }
 
-  async create({categories: categoriesIds, description, picture, title, type, sum}) {
+  async create({categories: categoriesIds, description, picture, title, type, sum, userId}) {
     const {sequelize} = this._dataBase;
     const {Offer, Category, User} = this._models;
 
     try {
-      const user = await User.findByPk(1);
+      const user = await User.findByPk(userId);
 
       const newOffer = await user.createOffer({
         title,
@@ -202,6 +202,26 @@ class OfferService {
       this._logger.error(`Can't find offers with title: ${ title }. Error: ${ error }`);
 
       return null;
+    }
+  }
+
+  async isOfferBelongToUser(offerId, userId) {
+    const {Offer} = this._models;
+
+    try {
+      const offer = await Offer.findByPk(offerId, {
+        raw: true,
+        attributes: [
+          `id`,
+          [`user_id`, `userId`],
+        ],
+      });
+
+      return offer.userId === userId;
+    } catch (error) {
+      this._logger.error(`Can't check whom offer belongs. Error: ${ error }`);
+
+      return false;
     }
   }
 }
